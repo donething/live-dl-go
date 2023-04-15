@@ -60,7 +60,7 @@ LabelNewFile:
 	stream.Reset(title, info.StreamUrl, headers, path, fileSizeThreshold, handler)
 
 	// 开始录制直播流
-	logger.Info.Printf("开始录制直播间【%s】(%+v)\n", info.Name, info)
+	logger.Info.Printf("开始录制直播间【%s】(%+v)\n", info.Name, anchor)
 	err = stream.Start()
 	if err != nil {
 		return err
