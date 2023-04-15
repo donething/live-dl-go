@@ -95,11 +95,7 @@ LabelNewFile:
 // 参数为 正在录制表、主播信息、临时文件存储路径（不需担心重名）、单视频大小、视频处理器
 func StartFlvAnchor(capturing *sync.Map, anchor *plats.Anchor, path string, fileSizeThreshold int,
 	handler hanlders.IHandler) error {
-	s := &FlvStream{Stream: &Stream{
-		Path:              path,
-		FileSizeThreshold: fileSizeThreshold,
-		Handler:           handler,
-	}}
+	s := &FlvStream{Stream: &Stream{}}
 
 	return startAnchor(capturing, s, anchor, path, fileSizeThreshold, handler)
 }
@@ -109,11 +105,7 @@ func StartFlvAnchor(capturing *sync.Map, anchor *plats.Anchor, path string, file
 // 参数为 正在录制表、主播信息、临时文件存储路径（不需担心重名）、单视频大小、视频处理器
 func StartM3u8Anchor(capturing *sync.Map, anchor *plats.Anchor, path string, fileSizeThreshold int,
 	handler hanlders.IHandler) error {
-	s := &M3u8Stream{Stream: &Stream{
-		Path:              path,
-		FileSizeThreshold: fileSizeThreshold,
-		Handler:           handler,
-	}}
+	s := &M3u8Stream{Stream: &Stream{}}
 
 	return startAnchor(capturing, s, anchor, path, fileSizeThreshold, handler)
 }
