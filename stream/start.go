@@ -60,6 +60,7 @@ LabelNewFile:
 	stream.Reset(title, info.StreamUrl, headers, path, fileSizeThreshold, handler)
 
 	// 开始录制直播流
+	logger.Info.Printf("开始录制直播间【%s】(%+v)\n", info.Name, info)
 	err = stream.Start()
 	if err != nil {
 		return err
@@ -83,6 +84,7 @@ LabelNewFile:
 	}
 
 	// 已下播，结束录制
+	logger.Info.Printf("直播间已中断直播【%s】(%+v)，停止录制\n", info.Name, anchor)
 	capturing.Delete(key)
 
 	return nil
@@ -90,7 +92,7 @@ LabelNewFile:
 
 // StartFlvAnchor 开始录制 flv 直播流
 //
-// 参数为 主播信息、临时文件存储路径（不需担心重名）、单视频大小、视频处理器
+// 参数为 正在录制表、主播信息、临时文件存储路径（不需担心重名）、单视频大小、视频处理器
 func StartFlvAnchor(capturing *sync.Map, anchor *plats.Anchor, path string, fileSizeThreshold int,
 	handler hanlders.IHandler) error {
 	s := &FlvStream{Stream: &Stream{
@@ -104,7 +106,7 @@ func StartFlvAnchor(capturing *sync.Map, anchor *plats.Anchor, path string, file
 
 // StartM3u8Anchor 开始录制 m3u8 直播流
 //
-// 参数为 主播信息、临时文件存储路径（不需担心重名）、单视频大小、视频处理器
+// 参数为 正在录制表、主播信息、临时文件存储路径（不需担心重名）、单视频大小、视频处理器
 func StartM3u8Anchor(capturing *sync.Map, anchor *plats.Anchor, path string, fileSizeThreshold int,
 	handler hanlders.IHandler) error {
 	s := &M3u8Stream{Stream: &Stream{

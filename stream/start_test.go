@@ -36,12 +36,12 @@ func TestStartFlv2(t *testing.T) {
 // 足迹的用户ID
 func TestStartM3u8(t *testing.T) {
 	anchor := plats.Anchor{
-		ID:   "15050303",
+		ID:   "15722883",
 		Plat: plats.PlatZuji,
 	}
 
 	err := StartM3u8Anchor(capturing, &anchor, "D:/Tmp/live/zuji_61667788.flv",
-		10*1024*1024, &tgHandler)
+		30*1024*1024, &tgHandler)
 	if err != nil {
 		t.Fatal(err)
 	}
