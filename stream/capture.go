@@ -73,7 +73,7 @@ func (s *Stream) save(file *os.File) {
 	// 获取视频（切片）的二进制数据
 LabelSegs:
 	for url := range s.ChSegUrl {
-		// fmt.Printf("收到视频切片的链接：%s\n", url)
+		// logger.Info.Printf("收到视频切片的链接：%s\n", url)
 		resp, err := comm.Client.Get(url, s.Headers)
 		if err != nil {
 			s.ChErr <- fmt.Errorf("请求视频出错：%w", err)
