@@ -29,7 +29,6 @@ func NewM3u8Stream(title, streamUrl string, headers map[string]string, path stri
 	}
 }
 
-// StartAnchor 下载 m3u8 直播流
 func (s *M3u8Stream) Start() error {
 	err := s.PrepareCapture()
 	if err != nil {

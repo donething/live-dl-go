@@ -1,9 +1,7 @@
 package bili
 
 import (
-	"dl-live-go/hanlders"
-	"github.com/donething/utils-go/dotg"
-	"os"
+	"dl-live-go/sites/plats"
 	"reflect"
 	"testing"
 )
@@ -15,14 +13,14 @@ func TestGetBiliLiveUrl(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    *sites.AnchorInfo
+		want    *plats.AnchorInfo
 		wantErr bool
 	}{
 		{
 			name:    "DYS",
 			args:    args{uid: "8739477"},
 			wantErr: false,
-			want: &sites.AnchorInfo{
+			want: &plats.AnchorInfo{
 				Name:  "老实憨厚的笑笑",
 				Title: "德云色 5点解说比赛！！",
 			},
@@ -44,18 +42,5 @@ func TestGetBiliLiveUrl(t *testing.T) {
 				t.Errorf("GetAnchorInfo() got = %v, want %v", got, tt.want)
 			}
 		})
-	}
-}
-
-func TestStartCapture(t *testing.T) {
-	tgHandler := &hanlders.TGHandler{
-		TG:        dotg.NewTGBot(os.Getenv("MY_TG_TOKEN")),
-		LocalPort: 0,
-		ChatID:    os.Getenv("MY_TG_CHAT_LIVE"),
-	}
-
-	err := StartCapture("8739477", "D:/Tmp/live/7777", 15*1024*1024, tgHandler)
-	if err != nil {
-		t.Fatal(err)
 	}
 }
