@@ -1,10 +1,10 @@
 package zuji
 
 import (
-	"dl-live-go/comm"
-	"dl-live-go/sites/plats"
 	"encoding/json"
 	"fmt"
+	"live-dl-go/comm"
+	"live-dl-go/sites/plats"
 	"regexp"
 )
 

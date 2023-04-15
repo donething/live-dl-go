@@ -1,11 +1,11 @@
 package stream
 
 import (
-	"dl-live-go/comm/logger"
-	"dl-live-go/hanlders"
-	_ "dl-live-go/sites"
-	"dl-live-go/sites/plats"
 	"fmt"
+	"live-dl-go/comm/logger"
+	"live-dl-go/hanlders"
+	_ "live-dl-go/sites"
+	"live-dl-go/sites/plats"
 	"sync"
 )
 

@@ -1,10 +1,10 @@
 package stream
 
 import (
-	"dl-live-go/hanlders"
-	"dl-live-go/sites/plats"
 	"fmt"
 	"github.com/donething/utils-go/dotg"
+	"live-dl-go/hanlders"
+	"live-dl-go/sites/plats"
 	"os"
 	"sync"
 	"testing"

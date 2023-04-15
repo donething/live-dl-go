@@ -1,10 +1,10 @@
 package bili
 
 import (
-	"dl-live-go/comm"
-	"dl-live-go/sites/plats"
 	"encoding/json"
 	"fmt"
+	"live-dl-go/comm"
+	"live-dl-go/sites/plats"
 )
 
 // RespRoomStatus 获取直播间的信息

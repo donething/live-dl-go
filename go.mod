@@ -1,4 +1,4 @@
-module dl-live-go
+module live-dl-go
 
 go 1.20
 

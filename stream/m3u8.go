@@ -1,9 +1,9 @@
 package stream
 
 import (
-	"dl-live-go/hanlders"
-	"dl-live-go/m3u8decoder"
 	"fmt"
+	"live-dl-go/hanlders"
+	"live-dl-go/m3u8decoder"
 )
 
 // M3u8Stream m3u8 直播流

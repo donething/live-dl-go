@@ -1,7 +1,7 @@
 package stream
 
 import (
-	"dl-live-go/hanlders"
+	"live-dl-go/hanlders"
 )
 
 // IStream 接口，用于

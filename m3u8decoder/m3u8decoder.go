@@ -6,9 +6,9 @@ package m3u8decoder
 import (
 	"bufio"
 	"bytes"
-	dllive "dl-live-go/comm"
 	"fmt"
 	"io"
+	dllive "live-dl-go/comm"
 	"strings"
 )
 
