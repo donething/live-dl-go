@@ -33,3 +33,7 @@ var HeadersBili = map[string]string{
 	"referer":    "https://live.bilibili.com/",
 	"user-agent": comm.UAWin,
 }
+
+var HeadersComm = map[string]string{
+	"user-agent": comm.UAWin,
+}

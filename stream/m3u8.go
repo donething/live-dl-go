@@ -75,3 +75,17 @@ func (s *M3u8Stream) GetChErr() chan error {
 func (s *M3u8Stream) GetChRestart() chan bool {
 	return s.ChRestart
 }
+
+func (s *M3u8Stream) Reset(title, streamUrl string, headers map[string]string, path string,
+	fileSizeThreshold int, hanlder hanlders.IHandler) {
+	s.ChErr = make(chan error)
+	s.ChRestart = make(chan bool)
+	s.ChSegUrl = make(chan string)
+
+	s.Title = title
+	s.LiveStreamUrl = streamUrl
+	s.Headers = headers
+	s.Path = path
+	s.FileSizeThreshold = fileSizeThreshold
+	s.Handler = hanlder
+}

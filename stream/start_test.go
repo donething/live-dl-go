@@ -12,7 +12,8 @@ func TestStartFlv(t *testing.T) {
 		Plat: plats.PlatBili,
 	}
 
-	err := StartFlvAnchor(&anchor, "D:/Tmp/live/bili_8739477.flv", 20*1024*1024, &tgHandler)
+	err := StartFlvAnchor(capturing, &anchor, "D:/Tmp/live/bili_8739477.flv",
+		20*1024*1024, &tgHandler)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -25,7 +26,8 @@ func TestStartFlv2(t *testing.T) {
 		Plat: plats.PlatDouyin,
 	}
 
-	err := StartFlvAnchor(&anchor, "D:/Tmp/live/douyin_249406961231.flv", 10*1024*1024, &tgHandler)
+	err := StartFlvAnchor(capturing, &anchor, "D:/Tmp/live/douyin_249406961231.flv",
+		10*1024*1024, &tgHandler)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -34,11 +36,12 @@ func TestStartFlv2(t *testing.T) {
 // 足迹的用户ID
 func TestStartM3u8(t *testing.T) {
 	anchor := plats.Anchor{
-		ID:   "61667788",
+		ID:   "15050303",
 		Plat: plats.PlatZuji,
 	}
 
-	err := StartM3u8Anchor(&anchor, "D:/Tmp/live/zuji_61667788.flv", 10*1024*1024, &tgHandler)
+	err := StartM3u8Anchor(capturing, &anchor, "D:/Tmp/live/zuji_61667788.flv",
+		10*1024*1024, &tgHandler)
 	if err != nil {
 		t.Fatal(err)
 	}

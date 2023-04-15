@@ -28,7 +28,7 @@ func NewFlvStream(title, streamUrl string, headers map[string]string, path strin
 	}
 }
 
-// StartAnchor 下载 flv 直播流
+// Start 下载 flv 直播流
 func (s *FlvStream) Start() error {
 	err := s.PrepareCapture()
 	if err != nil {
@@ -46,4 +46,18 @@ func (s *FlvStream) GetChErr() chan error {
 
 func (s *FlvStream) GetChRestart() chan bool {
 	return s.ChRestart
+}
+
+func (s *FlvStream) Reset(title, streamUrl string, headers map[string]string, path string,
+	fileSizeThreshold int, hanlder hanlders.IHandler) {
+	s.ChErr = make(chan error)
+	s.ChRestart = make(chan bool)
+	s.ChSegUrl = make(chan string)
+
+	s.Title = title
+	s.LiveStreamUrl = streamUrl
+	s.Headers = headers
+	s.Path = path
+	s.FileSizeThreshold = fileSizeThreshold
+	s.Handler = hanlder
 }

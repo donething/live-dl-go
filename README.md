@@ -10,9 +10,13 @@
 
 可查看`stream`包里的测试函数，查看使用方法
 
-推荐使用的例子
+直接使用
 
 ```go
+// 正在录制的主播，避免重复录制
+// 项的键为："<平台>_<主播ID>"，如 "bili_12345"
+var capturing = sync.Map{}
+
 // 哔哩哔哩的用户 ID
 func TestStartFlv(t *testing.T) {
 	anchor := plats.Anchor{
@@ -20,7 +24,7 @@ func TestStartFlv(t *testing.T) {
 		Plat: plats.PlatBili,
 	}
 
-	err := StartFlvAnchor(&anchor, "D:/Tmp/live/bili_8739477.flv", 20*1024*1024, &tgHandler)
+	err := StartFlvAnchor(capturing, &anchor, "D:/Tmp/live/bili_8739477.flv", 20*1024*1024, &tgHandler)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -33,14 +37,14 @@ func TestStartFlv2(t *testing.T) {
 		Plat: plats.PlatDouyin,
 	}
 
-	err := StartFlvAnchor(&anchor, "D:/Tmp/live/douyin_249406961231.flv", 10*1024*1024, &tgHandler)
+	err := StartFlvAnchor(capturing, &anchor, "D:/Tmp/live/douyin_249406961231.flv", 10*1024*1024, &tgHandler)
 	if err != nil {
 		t.Fatal(err)
 	}
 }
 
 // 足迹的用户ID
-func TestStartM3u8(t *testing.T) {
+func TestStartM3u8(capturing, t *testing.T) {
 	anchor := plats.Anchor{
 		ID:   "61667788",
 		Plat: plats.PlatZuji,

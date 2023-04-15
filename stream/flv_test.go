@@ -6,11 +6,14 @@ import (
 	"fmt"
 	"github.com/donething/utils-go/dotg"
 	"os"
+	"sync"
 	"testing"
 	"time"
 )
 
 var (
+	capturing = &sync.Map{}
+
 	tgHandler = hanlders.TGHandler{
 		TG:        dotg.NewTGBot(os.Getenv("MY_TG_TOKEN")),
 		LocalPort: 0,
