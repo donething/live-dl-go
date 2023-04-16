@@ -12,7 +12,7 @@ func TestStartFlv(t *testing.T) {
 		Plat: plats.PlatBili,
 	}
 
-	err := StartFlvAnchor(capturing, &anchor, "D:/Tmp/live/bili_8739477.flv",
+	err := StartFlvAnchor(capturing, anchor, "D:/Tmp/live/bili_8739477.flv",
 		20*1024*1024, &tgHandler)
 	if err != nil {
 		t.Fatal(err)
@@ -26,7 +26,7 @@ func TestStartFlv2(t *testing.T) {
 		Plat: plats.PlatDouyin,
 	}
 
-	err := StartFlvAnchor(capturing, &anchor, "D:/Tmp/live/douyin_249406961231.flv",
+	err := StartFlvAnchor(capturing, anchor, "D:/Tmp/live/douyin_249406961231.flv",
 		10*1024*1024, &tgHandler)
 	if err != nil {
 		t.Fatal(err)
@@ -40,7 +40,7 @@ func TestStartM3u8(t *testing.T) {
 		Plat: plats.PlatZuji,
 	}
 
-	err := StartM3u8Anchor(capturing, &anchor, "D:/Tmp/live/zuji_61667788.flv",
+	err := StartM3u8Anchor(capturing, anchor, "D:/Tmp/live/zuji_61667788.flv",
 		30*1024*1024, &tgHandler)
 	if err != nil {
 		t.Fatal(err)
@@ -53,7 +53,7 @@ func TestStartAnchor(t *testing.T) {
 		Plat: plats.PlatDouyin,
 	}
 
-	err := StartAnchor(capturing, nil, &anchor, "D:/Tmp/live/douyin_249406961231.flv",
+	err := StartAnchor(capturing, nil, anchor, "D:/Tmp/live/douyin_249406961231.flv",
 		10*1024*1024, &tgHandler)
 	if err != nil {
 		t.Fatal(err)

@@ -19,7 +19,7 @@ type NewStreamType func(title, streamUrl string, headers map[string]string, path
 // 参数为 正在录制表、直播流（Flv、M3u8）、主播信息、临时文件存储路径、单视频大小、视频处理器
 //
 // 当 stream 为 nil 时，将根据直播流地址自动生成
-func StartAnchor(capturing *sync.Map, stream IStream, anchor *plats.Anchor, path string,
+func StartAnchor(capturing *sync.Map, stream IStream, anchor plats.Anchor, path string,
 	fileSizeThreshold int, handler hanlders.IHandler) error {
 	// 此次是否是换新文件保存视频
 	// 用于当正在录播且isNewFile为真时，不退出
@@ -40,7 +40,7 @@ LabelNewFile:
 	key := GenCapturingKey(anchor.Plat, anchor.ID)
 
 	if !info.IsLive {
-		logger.Info.Printf("【%s】没有在播(%+v)\n", info.Name, *anchor)
+		logger.Info.Printf("【%s】没有在播(%+v)\n", info.Name, anchor)
 		capturing.Delete(key)
 		return nil
 	}
@@ -48,7 +48,7 @@ LabelNewFile:
 	// 判断此次是否需要录制视频
 	// 存在表示正在录制，不重复录制，返回
 	if _, exists := capturing.Load(key); !isNewFile && exists {
-		logger.Info.Printf("该直播间正在录制【%s】(%+v)\n", info.Name, *anchor)
+		logger.Info.Printf("该直播间正在录制【%s】(%+v)\n", info.Name, anchor)
 		return nil
 	}
 
@@ -108,7 +108,7 @@ LabelNewFile:
 // StartFlvAnchor 开始录制 flv 直播流
 //
 // 参数为 正在录制表、主播信息、临时文件存储路径（不需担心重名）、单视频大小、视频处理器
-func StartFlvAnchor(capturing *sync.Map, anchor *plats.Anchor, path string, fileSizeThreshold int,
+func StartFlvAnchor(capturing *sync.Map, anchor plats.Anchor, path string, fileSizeThreshold int,
 	handler hanlders.IHandler) error {
 	s := &FlvStream{Stream: &Stream{}}
 
@@ -120,7 +120,7 @@ func StartFlvAnchor(capturing *sync.Map, anchor *plats.Anchor, path string, file
 // 参数为 正在录制表、主播信息、临时文件存储路径（不需担心重名）、单视频大小、视频处理器
 //
 // 下载m3u8视频（非直播）时，可下载到单个文件中，不能分文件保存，因为会重读m3u8文件，也就会重头开始下载
-func StartM3u8Anchor(capturing *sync.Map, anchor *plats.Anchor, path string, fileSizeThreshold int,
+func StartM3u8Anchor(capturing *sync.Map, anchor plats.Anchor, path string, fileSizeThreshold int,
 	handler hanlders.IHandler) error {
 	s := &M3u8Stream{Stream: &Stream{}}
 
