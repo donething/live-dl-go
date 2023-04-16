@@ -1,4 +1,4 @@
-module live-dl-go
+module github.com/donething/live-dl-go
 
 go 1.20
 
