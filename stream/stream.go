@@ -35,6 +35,6 @@ type Stream struct {
 	// 因为下载视频到处理视频，要经过多个 goroutine，用 channel 传递错误信息
 	ChErr chan error
 	// 每保存一个视频文件就重新开始获取视频流。这样避免手动为视频添加头信息
-	// 需要手动实现重新开始下载，参考 `TestFlvStream_Start`函数
+	// 需要手动实现重新开始下载，参考 `startAnchor`函数
 	ChRestart chan bool
 }

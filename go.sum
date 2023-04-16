@@ -1,5 +1,5 @@
-github.com/donething/utils-go v0.0.29-0.20230414064716-cda93283d83a h1:sD6X1CY+xvEnEwf0YOefEvOkQ4aH09rmdeuBk7nY6A0=
-github.com/donething/utils-go v0.0.29-0.20230414064716-cda93283d83a/go.mod h1:xnWCBrhrm9iu6PLrmV23AYpUmidJSfXHwMJV9SrHNK0=
+github.com/donething/utils-go v0.0.29 h1:odOyCkWxRM0NqX3hbqxb8rD6Cjt5eeBC37ZOZTVw4TM=
+github.com/donething/utils-go v0.0.29/go.mod h1:xnWCBrhrm9iu6PLrmV23AYpUmidJSfXHwMJV9SrHNK0=
 github.com/saintfish/chardet v0.0.0-20120816061221-3af4cd4741ca h1:NugYot0LIVPxTvN8n+Kvkn6TrbMyxQiuvKdEwFdR9vI=
 github.com/saintfish/chardet v0.0.0-20120816061221-3af4cd4741ca/go.mod h1:uugorj2VCxiV1x+LzaIdVa9b4S4qGAcH6cbhh4qVxOU=
 golang.org/x/net v0.7.0 h1:rJrUqqhjsgNp7KqAIc25s9pZnjU7TUcSY7HcVZjdn1g=

@@ -103,6 +103,8 @@ func StartFlvAnchor(capturing *sync.Map, anchor *plats.Anchor, path string, file
 // StartM3u8Anchor 开始录制 m3u8 直播流
 //
 // 参数为 正在录制表、主播信息、临时文件存储路径（不需担心重名）、单视频大小、视频处理器
+//
+// 下载m3u8视频（非直播）时，可下载到单个文件中，不能分文件保存，因为会重读m3u8文件，也就会重头开始下载
 func StartM3u8Anchor(capturing *sync.Map, anchor *plats.Anchor, path string, fileSizeThreshold int,
 	handler hanlders.IHandler) error {
 	s := &M3u8Stream{Stream: &Stream{}}
