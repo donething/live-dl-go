@@ -17,8 +17,10 @@ type RespInterface struct {
 		Vid string `json:"vid"`
 		// 直播间标题
 		Title string `json:"title"`
-		// 用户 ID
+		// 用户显示的 ID。如短号、靓号
 		Name string `json:"name"`
+		// 用户真实 ID
+		Uid string `json:"uid"`
 		// 用户昵称
 		Nickname string `json:"nickname"`
 		// 用户头像

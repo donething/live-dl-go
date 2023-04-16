@@ -79,7 +79,7 @@ func GetAnchorInfo(uid string) (*plats.AnchorInfo, error) {
 	anchorInfo := plats.AnchorInfo{
 		Anchor: &anchor,
 		Avatar: info.Logourl,
-		Name:   info.Name,
+		Name:   info.Nickname,
 		WebUrl: fmt.Sprintf("http://share-g3g5zb3o.i.%s/r/%s", host, uid),
 		Title:  info.Title,
 		IsLive: info.Roomstatus == 1,
