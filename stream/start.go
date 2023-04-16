@@ -40,7 +40,7 @@ LabelNewFile:
 	key := GenCapturingKey(anchor.Plat, anchor.ID)
 
 	if !info.IsLive {
-		logger.Info.Printf("【%s】没有在播(%+v)\n", info.Name, anchor)
+		logger.Info.Printf("😴【%s】没有在播(%+v)\n", info.Name, anchor)
 		capturing.Delete(key)
 		return nil
 	}
@@ -48,7 +48,7 @@ LabelNewFile:
 	// 判断此次是否需要录制视频
 	// 存在表示正在录制，不重复录制，返回
 	if _, exists := capturing.Load(key); !isNewFile && exists {
-		logger.Info.Printf("该直播间正在录制【%s】(%+v)\n", info.Name, anchor)
+		logger.Info.Printf("😊【%s】正在录制…(%+v)\n", info.Name, anchor)
 		return nil
 	}
 
@@ -75,7 +75,7 @@ LabelNewFile:
 	stream.Reset(title, info.StreamUrl, headers, path, fileSizeThreshold, handler)
 
 	// 开始录制直播流
-	logger.Info.Printf("开始录制直播间【%s】(%+v)\n", info.Name, anchor)
+	logger.Info.Printf("😙开始录制直播间【%s】(%+v)\n", info.Name, anchor)
 	err = stream.Start()
 	if err != nil {
 		return err
@@ -99,7 +99,7 @@ LabelNewFile:
 	}
 
 	// 已下播，结束录制
-	logger.Info.Printf("直播间已中断直播【%s】(%+v)，停止录制\n", info.Name, anchor)
+	logger.Info.Printf("😶直播间已中断直播【%s】(%+v)，停止录制\n", info.Name, anchor)
 	capturing.Delete(key)
 
 	return nil
