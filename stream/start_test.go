@@ -46,3 +46,16 @@ func TestStartM3u8(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestStartAnchor(t *testing.T) {
+	anchor := plats.Anchor{
+		ID:   "249406961231",
+		Plat: plats.PlatDouyin,
+	}
+
+	err := StartAnchor(capturing, nil, &anchor, "D:/Tmp/live/douyin_249406961231.flv",
+		10*1024*1024, &tgHandler)
+	if err != nil {
+		t.Fatal(err)
+	}
+}

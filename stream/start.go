@@ -6,6 +6,7 @@ import (
 	"github.com/donething/live-dl-go/hanlders"
 	_ "github.com/donething/live-dl-go/sites"
 	"github.com/donething/live-dl-go/sites/plats"
+	"strings"
 	"sync"
 )
 
@@ -13,10 +14,12 @@ import (
 type NewStreamType func(title, streamUrl string, headers map[string]string, path string,
 	fileSizeThreshold int, handler hanlders.IHandler) IStream
 
-// 开始录制直播流
+// StartAnchor 开始录制直播流
 //
-// 参数为 主播信息、临时文件存储路径、单视频大小、视频处理器
-func startAnchor(capturing *sync.Map, stream IStream, anchor *plats.Anchor, path string,
+// 参数为 正在录制表、直播流（Flv、M3u8）、主播信息、临时文件存储路径、单视频大小、视频处理器
+//
+// 当 stream 为 nil 时，将根据直播流地址自动生成
+func StartAnchor(capturing *sync.Map, stream IStream, anchor *plats.Anchor, path string,
 	fileSizeThreshold int, handler hanlders.IHandler) error {
 	// 此次是否是换新文件保存视频
 	// 用于当正在录播且isNewFile为真时，不退出
@@ -56,6 +59,18 @@ LabelNewFile:
 	site := plats.Sites[anchor.Plat]
 	title := hanlders.GenTgCaption(info.Name, site, info.Title)
 	headers := plats.Headers[anchor.Plat]
+
+	// 如果没有指定直播流的类型，就自动匹配
+	if stream == nil {
+		if strings.Contains(strings.ToLower(info.StreamUrl), ".flv") {
+			stream = &FlvStream{Stream: &Stream{}}
+		} else if strings.Contains(strings.ToLower(info.StreamUrl), ".m3u8") {
+			stream = &M3u8Stream{Stream: &Stream{}}
+		} else {
+			return fmt.Errorf("没有匹配到直播流的类型：%s", info.StreamUrl)
+		}
+	}
+
 	// 设置流的信息
 	stream.Reset(title, info.StreamUrl, headers, path, fileSizeThreshold, handler)
 
@@ -97,7 +112,7 @@ func StartFlvAnchor(capturing *sync.Map, anchor *plats.Anchor, path string, file
 	handler hanlders.IHandler) error {
 	s := &FlvStream{Stream: &Stream{}}
 
-	return startAnchor(capturing, s, anchor, path, fileSizeThreshold, handler)
+	return StartAnchor(capturing, s, anchor, path, fileSizeThreshold, handler)
 }
 
 // StartM3u8Anchor 开始录制 m3u8 直播流
@@ -109,7 +124,7 @@ func StartM3u8Anchor(capturing *sync.Map, anchor *plats.Anchor, path string, fil
 	handler hanlders.IHandler) error {
 	s := &M3u8Stream{Stream: &Stream{}}
 
-	return startAnchor(capturing, s, anchor, path, fileSizeThreshold, handler)
+	return StartAnchor(capturing, s, anchor, path, fileSizeThreshold, handler)
 }
 
 // GenCapturingKey 正在录制的主播的键，避免重复录制，格式如 "<平台>_<主播ID>"，如 "bili_12345"
