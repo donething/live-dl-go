@@ -1,7 +1,7 @@
 package stream
 
 import (
-	"live-dl-go/sites/plats"
+	"github.com/donething/live-dl-go/sites/plats"
 	"testing"
 )
 

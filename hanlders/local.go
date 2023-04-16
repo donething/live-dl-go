@@ -2,7 +2,7 @@ package hanlders
 
 import (
 	"fmt"
-	"live-dl-go/comm/logger"
+	"github.com/donething/live-dl-go/comm/logger"
 	"os"
 	"path/filepath"
 )

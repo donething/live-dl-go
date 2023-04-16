@@ -1,6 +1,6 @@
 package plats
 
-import "live-dl-go/comm"
+import "github.com/donething/live-dl-go/comm"
 
 // 平台
 const (

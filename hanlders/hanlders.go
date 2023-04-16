@@ -1,7 +1,7 @@
 package hanlders
 
 import (
-	"live-dl-go/comm/logger"
+	"github.com/donething/live-dl-go/comm/logger"
 )
 
 // IHandler 处理已完成下载的视频的处理器接口

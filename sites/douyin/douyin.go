@@ -6,8 +6,8 @@ package douyin
 import (
 	"encoding/json"
 	"fmt"
-	"live-dl-go/comm"
-	"live-dl-go/sites/plats"
+	"github.com/donething/live-dl-go/comm"
+	"github.com/donething/live-dl-go/sites/plats"
 	"net/url"
 	"regexp"
 )

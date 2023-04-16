@@ -2,10 +2,10 @@ package stream
 
 import (
 	"fmt"
-	"live-dl-go/comm/logger"
-	"live-dl-go/hanlders"
-	_ "live-dl-go/sites"
-	"live-dl-go/sites/plats"
+	"github.com/donething/live-dl-go/comm/logger"
+	"github.com/donething/live-dl-go/hanlders"
+	_ "github.com/donething/live-dl-go/sites"
+	"github.com/donething/live-dl-go/sites/plats"
 	"sync"
 )
 
@@ -37,7 +37,7 @@ LabelNewFile:
 	key := GenCapturingKey(anchor.Plat, anchor.ID)
 
 	if !info.IsLive {
-		logger.Info.Printf("主播未在播【%s】(%+v)\n", info.Name, *anchor)
+		logger.Info.Printf("【%s】没有在播(%+v)\n", info.Name, *anchor)
 		capturing.Delete(key)
 		return nil
 	}

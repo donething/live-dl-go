@@ -7,8 +7,8 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
+	dllive "github.com/donething/live-dl-go/comm"
 	"io"
-	dllive "live-dl-go/comm"
 	"strings"
 )
 

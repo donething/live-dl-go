@@ -4,9 +4,9 @@ package stream
 
 import (
 	"fmt"
-	"live-dl-go/comm"
-	"live-dl-go/comm/logger"
-	"live-dl-go/hanlders"
+	"github.com/donething/live-dl-go/comm"
+	"github.com/donething/live-dl-go/comm/logger"
+	"github.com/donething/live-dl-go/hanlders"
 	"os"
 	"path/filepath"
 	"time"

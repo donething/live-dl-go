@@ -1,10 +1,10 @@
 package sites
 
 import (
-	"live-dl-go/sites/bili"
-	"live-dl-go/sites/douyin"
-	"live-dl-go/sites/plats"
-	"live-dl-go/sites/zuji"
+	"github.com/donething/live-dl-go/sites/bili"
+	"github.com/donething/live-dl-go/sites/douyin"
+	"github.com/donething/live-dl-go/sites/plats"
+	"github.com/donething/live-dl-go/sites/zuji"
 )
 
 func init() {

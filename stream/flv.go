@@ -2,7 +2,7 @@ package stream
 
 import (
 	"fmt"
-	"live-dl-go/hanlders"
+	"github.com/donething/live-dl-go/hanlders"
 )
 
 // FlvStream flv 直播流

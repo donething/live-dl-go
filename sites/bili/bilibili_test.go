@@ -1,7 +1,7 @@
 package bili
 
 import (
-	"live-dl-go/sites/plats"
+	"github.com/donething/live-dl-go/sites/plats"
 	"reflect"
 	"testing"
 )
