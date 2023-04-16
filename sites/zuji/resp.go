@@ -20,7 +20,7 @@ type RespInterface struct {
 		// 用户显示的 ID。如短号、靓号
 		Name string `json:"name"`
 		// 用户真实 ID
-		Uid string `json:"uid"`
+		Uid int `json:"uid"`
 		// 用户昵称
 		Nickname string `json:"nickname"`
 		// 用户头像
