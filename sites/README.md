@@ -13,4 +13,7 @@ if err != nil {
 
 # 增加网站
 
-新增网站，需要实现 `IAnchor` 接口的方法
+新增网站需要：
+
+1. 实现 `IAnchor` 接口的方法
+2. 修改 `plats.Plats` 、 `plats.GenAnchor()`，增加新平台

@@ -8,6 +8,13 @@ import (
 	"github.com/donething/live-dl-go/sites/zuji"
 )
 
+// Plats 已适配的所有平台
+var Plats = map[string]string{
+	bili.Plat:   "",
+	douyin.Plat: "",
+	zuji.Plat:   "",
+}
+
 // GenAnchor 自动生成与平台对应的 Anchor* 的实例
 func GenAnchor(anchor *entity.Anchor) (entity.IAnchor, error) {
 	switch anchor.Plat {
@@ -20,4 +27,10 @@ func GenAnchor(anchor *entity.Anchor) (entity.IAnchor, error) {
 	default:
 		return nil, fmt.Errorf("未知的平台(%+v)", anchor)
 	}
+}
+
+// ExistPlat 检查给定的平台是否存在
+func ExistPlat(plat string) bool {
+	_, exists := Plats[plat]
+	return exists
 }
