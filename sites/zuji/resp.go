@@ -1,10 +1,8 @@
 package zuji
 
-// RespInterface 1. 用来获取直播间号
-//
-// 本来这个响应内容基本和 RespWatchStart 一直。但是缺少最关键的 `play_url` (有属性，但为空"")
-//
-// 不得不根据这个获取 vid，再获取 RespWatchStart 得到 play_url
+// 可在 `insomnia` 中查看详细的数据来源和请求步骤
+
+// RespInterface 获取直播间号
 type RespInterface struct {
 	// "ok" 表示成功，其它字符串表示出错
 	Retval string `json:"retval"`
@@ -30,9 +28,7 @@ type RespInterface struct {
 	} `json:"retinfo"`
 }
 
-// RespWatchStart 2. 获取直播流地址
-//
-// GET https://m.szsbtech.com/appgw/v2/watchstart
+// RespWatchStart 获取直播流地址
 type RespWatchStart struct {
 	// "ok" 表示成功，其它字符串表示出错
 	Retval string `json:"retval"`
