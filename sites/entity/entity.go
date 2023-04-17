@@ -1,4 +1,6 @@
-package plats
+package entity
+
+import "fmt"
 
 // Anchor 需要获取直播流的主播的信息
 type Anchor struct {
@@ -27,7 +29,12 @@ type AnchorInfo struct {
 	StreamUrl string `json:"streamUrl"`
 }
 
-// PlatOp 不同平台对应的操作
-type PlatOp struct {
-	GetAnchorInfo func(uid string) (*AnchorInfo, error)
+// GenAnchorInfoWhenErr 当 GetAnchorInfo() 获取主播信息出错时，避免返回 nil，而是快速生成实例
+func GenAnchorInfoWhenErr(anchor *Anchor, webUrl string) *AnchorInfo {
+	return &AnchorInfo{
+		Anchor: anchor,
+		Name:   fmt.Sprintf("%s %s", anchor.Plat, anchor.ID),
+		Title:  "获取出错",
+		WebUrl: webUrl,
+	}
 }

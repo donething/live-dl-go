@@ -1,18 +1,8 @@
-package stream
+package entity
 
 import (
 	"github.com/donething/live-dl-go/hanlders"
 )
-
-// IStream 接口，用于
-type IStream interface {
-	Start() error
-	GetChErr() chan error
-	GetChRestart() chan bool
-	// Reset 需要设置为指定值的需要增加为参数，设置为默认值的不需要
-	Reset(title, streamUrl string, headers map[string]string, path string,
-		fileSizeThreshold int, hanlder hanlders.IHandler)
-}
 
 // Stream 直播流
 type Stream struct {

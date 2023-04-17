@@ -1,39 +1,23 @@
 package plats
 
-import "github.com/donething/live-dl-go/comm"
-
-// 平台
-const (
-	PlatBili   = "bili"
-	PlatDouyin = "douyin"
-	PlatZuji   = "zuji"
+import (
+	"fmt"
+	"github.com/donething/live-dl-go/sites/bili"
+	"github.com/donething/live-dl-go/sites/douyin"
+	"github.com/donething/live-dl-go/sites/entity"
+	"github.com/donething/live-dl-go/sites/zuji"
 )
 
-// Sites 平台对应的网站名
-var Sites = map[string]string{
-	PlatBili:   "哔哩哔哩",
-	PlatDouyin: "抖音",
-	PlatZuji:   "足迹",
-}
-
-// Plats 主播的平台
-//
-// 避免循环导入包，此处不能直接初始化
-//
-// 务必在 `live/web.go` 的 `init()` 中对各个平台完成赋值
-var Plats = map[string]*PlatOp{
-	PlatBili:   {},
-	PlatDouyin: {},
-	PlatZuji:   {},
-}
-
-// HeadersBili 哔哩哔哩直播的请求头
-var HeadersBili = map[string]string{
-	// referer 必不可少
-	"referer":    "https://live.bilibili.com/",
-	"user-agent": comm.UAWin,
-}
-
-var HeadersComm = map[string]string{
-	"user-agent": comm.UAWin,
+// GenAnchor 自动生成与平台对应的 Anchor* 的实例
+func GenAnchor(anchor *entity.Anchor) (entity.IAnchor, error) {
+	switch anchor.Plat {
+	case bili.Plat:
+		return &bili.AnchorBili{Anchor: anchor}, nil
+	case douyin.Plat:
+		return &douyin.AnchorDouyin{Anchor: anchor}, nil
+	case zuji.Plat:
+		return &zuji.AnchorZuji{Anchor: anchor}, nil
+	default:
+		return nil, fmt.Errorf("未知的平台(%+v)", anchor)
+	}
 }

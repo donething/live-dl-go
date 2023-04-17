@@ -4,12 +4,23 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/donething/live-dl-go/comm"
-	"github.com/donething/live-dl-go/sites/plats"
+	"github.com/donething/live-dl-go/sites/entity"
 	"regexp"
 )
 
-// 目标域名
-const host = "szsbtech.com"
+const (
+	// 目标域名
+	host = "szsbtech.com"
+
+	Plat = "zuji"
+	name = "足迹"
+)
+
+// AnchorZuji 足迹主播
+type AnchorZuji struct {
+	// 主播的 ID 为用户 ID
+	*entity.Anchor
+}
 
 // 1. 获取 sessionid
 func getSessionid(uid string) (string, error) {
@@ -58,29 +69,26 @@ func getBasicInfo(uid string, sessionid string) (*RespInterface, error) {
 }
 
 // GetAnchorInfo 3. 获取足迹主播的信息
-func GetAnchorInfo(uid string) (*plats.AnchorInfo, error) {
+func (a *AnchorZuji) GetAnchorInfo() (*entity.AnchorInfo, error) {
 	// 先获取基础信息
-	sessionid, err := getSessionid(uid)
+	sessionid, err := getSessionid(a.ID)
 	if err != nil {
-		return nil, err
+		return entity.GenAnchorInfoWhenErr(a.Anchor,
+			fmt.Sprintf("https://share-aq2g4taz.i.%s/u/%s", host, a.ID)), err
 	}
 
-	vData, err := getBasicInfo(uid, sessionid)
+	vData, err := getBasicInfo(a.ID, sessionid)
 	if err != nil {
-		return nil, err
-	}
-
-	anchor := plats.Anchor{
-		ID:   uid,
-		Plat: plats.PlatZuji,
+		return entity.GenAnchorInfoWhenErr(a.Anchor,
+			fmt.Sprintf("https://share-aq2g4taz.i.%s/u/%s", host, a.ID)), err
 	}
 
 	info := vData.Retinfo
-	anchorInfo := plats.AnchorInfo{
-		Anchor: &anchor,
+	anchorInfo := entity.AnchorInfo{
+		Anchor: a.Anchor,
 		Avatar: info.Logourl,
 		Name:   info.Nickname,
-		WebUrl: fmt.Sprintf("http://share-g3g5zb3o.i.%s/r/%s", host, uid),
+		WebUrl: fmt.Sprintf("http://share-g3g5zb3o.i.%s/r/%s", host, a.ID),
 		Title:  info.Title,
 		IsLive: info.Roomstatus == 1,
 	}
@@ -114,4 +122,16 @@ func GetAnchorInfo(uid string) (*plats.AnchorInfo, error) {
 	anchorInfo.StreamUrl = resp.Retinfo.PlayURL
 
 	return &anchorInfo, nil
+}
+
+// GetPlatName 获取平台名
+func (a *AnchorZuji) GetPlatName() string {
+	return name
+}
+
+// GetStreamHeaders 请求直播流时的请求头
+func (a *AnchorZuji) GetStreamHeaders() map[string]string {
+	return map[string]string{
+		"user-agent": comm.UAAndroid,
+	}
 }

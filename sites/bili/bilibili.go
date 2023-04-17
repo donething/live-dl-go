@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/donething/live-dl-go/comm"
-	"github.com/donething/live-dl-go/sites/plats"
+	"github.com/donething/live-dl-go/sites/entity"
 )
 
 // RespRoomStatus 获取直播间的信息
@@ -39,33 +39,31 @@ type RespPlayURL struct {
 	} `json:"data"`
 }
 
-const tags = "[Bili]"
-
-var headers = map[string]string{
-	"user-agent": comm.UAWin,
+// AnchorBili 哔哩哔哩主播
+type AnchorBili struct {
+	// 主播的 ID 为用户 ID
+	*entity.Anchor
 }
 
+const (
+	Plat = "bili"
+	name = "哔哩哔哩"
+)
+
 // GetAnchorInfo 获取哔哩哔哩直播流的地址
-//
-// 参数 uid 为用户 ID，而不是房间号
-func GetAnchorInfo(uid string) (*plats.AnchorInfo, error) {
+func (a *AnchorBili) GetAnchorInfo() (*entity.AnchorInfo, error) {
 	// 获取房间信息
-	roomStatus, err := getRoomStatus(uid)
+	roomStatus, err := getRoomStatus(a.ID)
 	if err != nil {
-		return nil, err
+		return entity.GenAnchorInfoWhenErr(a.Anchor, fmt.Sprintf("https://space.bilibili.com/%s", a.ID)), err
 	}
 	playUrl, err := getPlayUrl(roomStatus.RoomID)
 	if err != nil {
-		return nil, err
+		return entity.GenAnchorInfoWhenErr(a.Anchor, fmt.Sprintf("https://space.bilibili.com/%s", a.ID)), err
 	}
 
-	anchor := plats.Anchor{
-		ID:   uid,
-		Plat: plats.PlatBili,
-	}
-
-	info := plats.AnchorInfo{
-		Anchor:    &anchor,
+	info := entity.AnchorInfo{
+		Anchor:    a.Anchor,
 		Avatar:    roomStatus.Face,
 		Name:      roomStatus.Uname,
 		WebUrl:    fmt.Sprintf("https://live.bilibili.com/%d", roomStatus.RoomID),
@@ -78,14 +76,29 @@ func GetAnchorInfo(uid string) (*plats.AnchorInfo, error) {
 	return &info, nil
 }
 
+// GetPlatName 获取平台名
+func (a *AnchorBili) GetPlatName() string {
+	return name
+}
+
+// GetStreamHeaders 请求直播流时的请求头
+func (a *AnchorBili) GetStreamHeaders() map[string]string {
+	return map[string]string{
+		// referer 必不可少
+		"referer":    "https://live.bilibili.com/",
+		"user-agent": comm.UAWin,
+	}
+}
+
 // 获取哔哩哔哩直播间的信息
-//
-// 参数 uid 为用户 ID，而不是房间号
 func getRoomStatus(uid string) (*RoomStatus, error) {
+	headers := map[string]string{
+		"user-agent": comm.UAWin,
+	}
 	url := "https://api.live.bilibili.com/room/v1/Room/get_status_info_by_uids?uids[]=" + uid
 	bs, err := comm.Client.GetBytes(url, headers)
 	if err != nil {
-		return nil, fmt.Errorf("%s 获取主播信息出错：%w", tags, err)
+		return nil, fmt.Errorf("获取主播信息出错：%w", err)
 	}
 
 	var resp RespRoomStatus
@@ -117,18 +130,21 @@ func getRoomStatus(uid string) (*RoomStatus, error) {
 
 // 获取直播流地址
 func getPlayUrl(roomid int) (string, error) {
+	headers := map[string]string{
+		"user-agent": comm.UAWin,
+	}
 	// 获取直播流地址
 	url := fmt.Sprintf("https://api.live.bilibili.com/room/v1/Room/playUrl?platform=web&"+
 		"qn=10000&cid=%d", roomid)
 	bs, err := comm.Client.GetBytes(url, headers)
 	if err != nil {
-		return "", fmt.Errorf("%s 获取直播地址出错：%w", tags, err)
+		return "", fmt.Errorf("获取直播地址出错：%w", err)
 	}
 
 	var resp RespPlayURL
 	err = json.Unmarshal(bs, &resp)
 	if err != nil {
-		return "", fmt.Errorf("%s 解析直播地址出错：%w", tags, err)
+		return "", fmt.Errorf("解析直播地址出错：%w", err)
 	}
 
 	// 解析得到地址
@@ -136,5 +152,5 @@ func getPlayUrl(roomid int) (string, error) {
 		return resp.Data.Durl[0].URL, nil
 	}
 
-	return "", fmt.Errorf("%s 直播流的地址数据为空", tags)
+	return "", fmt.Errorf("直播流的地址数据为空")
 }

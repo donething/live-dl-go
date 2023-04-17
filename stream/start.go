@@ -4,40 +4,43 @@ import (
 	"fmt"
 	"github.com/donething/live-dl-go/comm/logger"
 	"github.com/donething/live-dl-go/hanlders"
-	_ "github.com/donething/live-dl-go/sites"
+	"github.com/donething/live-dl-go/sites/entity"
 	"github.com/donething/live-dl-go/sites/plats"
+	streamentity "github.com/donething/live-dl-go/stream/entity"
+	"github.com/donething/live-dl-go/stream/flv"
+	"github.com/donething/live-dl-go/stream/m3u8"
 	"strings"
 	"sync"
 )
 
 // NewStreamType 函数类型，用于创建`Stream`
 type NewStreamType func(title, streamUrl string, headers map[string]string, path string,
-	fileSizeThreshold int, handler hanlders.IHandler) IStream
+	fileSizeThreshold int, handler hanlders.IHandler) streamentity.IStream
 
 // StartAnchor 开始录制直播流
 //
 // 参数为 正在录制表、直播流（Flv、M3u8）、主播信息、临时文件存储路径、单视频大小、视频处理器
 //
 // 当 stream 为 nil 时，将根据直播流地址自动生成
-func StartAnchor(capturing *sync.Map, stream IStream, anchor plats.Anchor, path string,
+func StartAnchor(capturing *sync.Map, stream streamentity.IStream, anchor entity.Anchor, path string,
 	fileSizeThreshold int, handler hanlders.IHandler) error {
 	// 此次是否是换新文件保存视频
 	// 用于当正在录播且isNewFile为真时，不退出
 	var isNewFile = false
 
-	plat, ok := plats.Plats[anchor.Plat]
-	if !ok {
-		return fmt.Errorf("未知的平台'%s'", anchor.Plat)
+	anchorSite, err := plats.GenAnchor(&anchor)
+	if err != nil {
+		return err
 	}
 
 	// 	换新文件保存视频，需要重新读取直播流的地址，以防旧的地址失效
 LabelNewFile:
-	info, err := plat.GetAnchorInfo(anchor.ID)
+	info, err := anchorSite.GetAnchorInfo()
 	if err != nil {
 		return err
 	}
 	// 是否正在录播的键
-	key := GenCapturingKey(anchor.Plat, anchor.ID)
+	key := GenCapturingKey(&anchor)
 
 	if !info.IsLive {
 		logger.Info.Printf("😴【%s】没有在播(%+v)\n", info.Name, anchor)
@@ -56,16 +59,15 @@ LabelNewFile:
 
 	// 生成标题
 	// 平台对应的网站名
-	site := plats.Sites[anchor.Plat]
-	title := hanlders.GenTgCaption(info.Name, site, info.Title)
-	headers := plats.Headers[anchor.Plat]
+	title := hanlders.GenTgCaption(info.Name, anchorSite.GetPlatName(), info.Title)
+	headers := anchorSite.GetStreamHeaders()
 
 	// 如果没有指定直播流的类型，就自动匹配
 	if stream == nil {
 		if strings.Contains(strings.ToLower(info.StreamUrl), ".flv") {
-			stream = &FlvStream{Stream: &Stream{}}
+			stream = &flv.Stream{Stream: &streamentity.Stream{}}
 		} else if strings.Contains(strings.ToLower(info.StreamUrl), ".m3u8") {
-			stream = &M3u8Stream{Stream: &Stream{}}
+			stream = &m3u8.Stream{Stream: &streamentity.Stream{}}
 		} else {
 			return fmt.Errorf("没有匹配到直播流的类型：%s", info.StreamUrl)
 		}
@@ -108,9 +110,9 @@ LabelNewFile:
 // StartFlvAnchor 开始录制 flv 直播流
 //
 // 参数为 正在录制表、主播信息、临时文件存储路径（不需担心重名）、单视频大小、视频处理器
-func StartFlvAnchor(capturing *sync.Map, anchor plats.Anchor, path string, fileSizeThreshold int,
+func StartFlvAnchor(capturing *sync.Map, anchor entity.Anchor, path string, fileSizeThreshold int,
 	handler hanlders.IHandler) error {
-	s := &FlvStream{Stream: &Stream{}}
+	s := &flv.Stream{Stream: &streamentity.Stream{}}
 
 	return StartAnchor(capturing, s, anchor, path, fileSizeThreshold, handler)
 }
@@ -120,14 +122,14 @@ func StartFlvAnchor(capturing *sync.Map, anchor plats.Anchor, path string, fileS
 // 参数为 正在录制表、主播信息、临时文件存储路径（不需担心重名）、单视频大小、视频处理器
 //
 // 下载m3u8视频（非直播）时，可下载到单个文件中，不能分文件保存，因为会重读m3u8文件，也就会重头开始下载
-func StartM3u8Anchor(capturing *sync.Map, anchor plats.Anchor, path string, fileSizeThreshold int,
+func StartM3u8Anchor(capturing *sync.Map, anchor entity.Anchor, path string, fileSizeThreshold int,
 	handler hanlders.IHandler) error {
-	s := &M3u8Stream{Stream: &Stream{}}
+	s := &m3u8.Stream{Stream: &streamentity.Stream{}}
 
 	return StartAnchor(capturing, s, anchor, path, fileSizeThreshold, handler)
 }
 
 // GenCapturingKey 正在录制的主播的键，避免重复录制，格式如 "<平台>_<主播ID>"，如 "bili_12345"
-func GenCapturingKey(plat, id string) string {
-	return fmt.Sprintf("%s_%s", plat, id)
+func GenCapturingKey(anchor *entity.Anchor) string {
+	return fmt.Sprintf("%s_%s", anchor.Plat, anchor.ID)
 }

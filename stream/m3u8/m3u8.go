@@ -1,21 +1,22 @@
-package stream
+package m3u8
 
 import (
 	"fmt"
 	"github.com/donething/live-dl-go/hanlders"
 	"github.com/donething/live-dl-go/m3u8decoder"
+	"github.com/donething/live-dl-go/stream/entity"
 )
 
-// M3u8Stream m3u8 直播流
-type M3u8Stream struct {
-	*Stream
+// Stream m3u8 直播流
+type Stream struct {
+	*entity.Stream
 }
 
-// NewM3u8Stream 创建 M3u8Stream 的实例
+// NewM3u8Stream 创建 Stream 的实例
 func NewM3u8Stream(title, streamUrl string, headers map[string]string, path string,
-	fileSizeThreshold int, handler hanlders.IHandler) IStream {
-	return &M3u8Stream{
-		Stream: &Stream{
+	fileSizeThreshold int, handler hanlders.IHandler) entity.IStream {
+	return &Stream{
+		Stream: &entity.Stream{
 			Title:             title,
 			LiveStreamUrl:     streamUrl,
 			Headers:           headers,
@@ -29,7 +30,7 @@ func NewM3u8Stream(title, streamUrl string, headers map[string]string, path stri
 	}
 }
 
-func (s *M3u8Stream) Start() error {
+func (s *Stream) Start() error {
 	err := s.PrepareCapture()
 	if err != nil {
 		return fmt.Errorf("准备录制m3u8流时出错：%w", err)
@@ -40,7 +41,7 @@ func (s *M3u8Stream) Start() error {
 	return nil
 }
 
-func (s *M3u8Stream) sendSeq() {
+func (s *Stream) sendSeq() {
 	for {
 		// 解码 m3u8 视频列表
 		m := m3u8decoder.New()
@@ -68,15 +69,15 @@ func (s *M3u8Stream) sendSeq() {
 	// 	不用返回 nil 给 s.chErr，以免返回后主函数继续执行下一步，而此时直播流还没有下载成功（只是发送URL成功）
 }
 
-func (s *M3u8Stream) GetChErr() chan error {
+func (s *Stream) GetChErr() chan error {
 	return s.ChErr
 }
 
-func (s *M3u8Stream) GetChRestart() chan bool {
+func (s *Stream) GetChRestart() chan bool {
 	return s.ChRestart
 }
 
-func (s *M3u8Stream) Reset(title, streamUrl string, headers map[string]string, path string,
+func (s *Stream) Reset(title, streamUrl string, headers map[string]string, path string,
 	fileSizeThreshold int, hanlder hanlders.IHandler) {
 	s.ChErr = make(chan error)
 	s.ChRestart = make(chan bool)

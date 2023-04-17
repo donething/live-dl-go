@@ -7,9 +7,20 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/donething/live-dl-go/comm"
-	"github.com/donething/live-dl-go/sites/plats"
+	"github.com/donething/live-dl-go/sites/entity"
 	"net/url"
 	"regexp"
+)
+
+// AnchorDouyin 抖音主播
+type AnchorDouyin struct {
+	// 主播的 ID 为直播间号
+	*entity.Anchor
+}
+
+const (
+	Plat = "douyin"
+	name = "抖音"
 )
 
 var (
@@ -17,34 +28,31 @@ var (
 	headers = map[string]string{
 		"user-agent": comm.UAWin,
 		"referer":    "https://live.douyin.com/",
-		"cookie":     `__ac_nonce=0643858c700f34a8c2c8a; __ac_signature=_02B4Z6wo00f01P5n5.QAAIDBnW0nnZXIxDD-R-NAAFun3d; ttwid=1%7Cel-5Doi29H-jlz0Xx2hq2NIGFu52ojyovikjEvWE7nI%7C1681414343%7Ca8d601d269cb3a2d959fbc84f1efbfc12f994878c9d218f8840730fc4984a95a; __live_version__=%221.1.0.8512%22; device_web_cpu_core=6; device_web_memory_size=8; live_can_add_dy_2_desktop=%220%22; csrf_session_id=80cbc87883f90a294efa5df9d1d1071f; webcast_local_quality=sd; xgplayer_user_id=420141080552; odin_tt=70b997c3ad3c3d2739734731de4414c1557629c28e7805699d211b657bd8b9af64507faaffe7ed73bb3c17921b343a72f9f98f98d434ff5ff667d32bbdc9b72addd26f309ab3eade2f4a825574b0cf71; s_v_web_id=verify_lgfiovrb_Qfn1H8Or_tVGT_40CI_9ICx_OfJcZyfxNrXL; passport_csrf_token=200310d76f2b1f67874730055d6eeb05; passport_csrf_token_default=200310d76f2b1f67874730055d6eeb05; msToken=Wx0wVzU4c_4Xqtps0BxewKzNqdUdlh4KK7cr207MEYSljxBEQ-ZQNLz7ewkdVDY9bpBe5IWCo12ronkhBxxXU6gFNu05g9ZoTOy8wmQzV8GEE1s8PHZjzUfYSfDiwA==; ttcid=96084af587fd43a09f67e0a2817cb0c118; tt_scid=K4G-bpw79V9jdx1FA5ciYmyxnEA.9mLKUMusCHBUE.aQfkK010CR.Ag78hx2.L1P7f86; msToken=h6I_i5D3SH7DkA9jDV2X3UX3qYhAu8FLqM91h0yIGdKyWLF3KTJEZc6-WOk3P_KeATd_TaaOJEUCghJ4ugXs9CoCif14r5f0l4gXCXjcwkHAan7F2skbo1EdNK7q1w==`,
+		"cookie":     `__ac_nonce=0643d7054003a052ad132; __ac_signature=_02B4Z6wo00f01LAm0.wAAIDB0ywTl16l12SwBtdAAEg5ad; __ac_referer=__ac_blank`,
 	}
 )
 
 // GetAnchorInfo 获取抖音主播直播间的信息
 //
 // roomid 直播间号
-func GetAnchorInfo(roomid string) (*plats.AnchorInfo, error) {
+func (a *AnchorDouyin) GetAnchorInfo() (*entity.AnchorInfo, error) {
 	// 提取直播间的直播信息
-	u := fmt.Sprintf("https://live.douyin.com/%s", roomid)
+	u := fmt.Sprintf("https://live.douyin.com/%s", a.ID)
 	roomStatus, err := parseRenderData[RoomStatus](u)
 	if err != nil {
-		return nil, fmt.Errorf("获取直播间信息出错(%s)：%w", roomid, err)
+		return entity.GenAnchorInfoWhenErr(a.Anchor, fmt.Sprintf("https://live.douyin.com/%s", a.ID)),
+			fmt.Errorf("获取直播间出错：%w", err)
 	}
 
 	// 是否开播，关系到页面中是否存在数据
 	if roomStatus.App.InitialState.RoomStore.RoomInfo.Anchor.Nickname == "" {
-		return nil, fmt.Errorf("不存在直播间(%s)", roomid)
-	}
-
-	anchor := plats.Anchor{
-		ID:   roomid,
-		Plat: plats.PlatDouyin,
+		return entity.GenAnchorInfoWhenErr(a.Anchor, fmt.Sprintf("https://live.douyin.com/%s", a.ID)),
+			fmt.Errorf("不存在的直播间")
 	}
 
 	roomInfo := roomStatus.App.InitialState.RoomStore.RoomInfo
-	anchorInfo := plats.AnchorInfo{
-		Anchor:    &anchor,
+	anchorInfo := entity.AnchorInfo{
+		Anchor:    a.Anchor,
 		Avatar:    roomInfo.Anchor.AvatarThumb.URLList[0],
 		Name:      roomInfo.Anchor.Nickname,
 		WebUrl:    fmt.Sprintf("https://live.douyin.com/%s", roomInfo.WebRid),
@@ -54,6 +62,18 @@ func GetAnchorInfo(roomid string) (*plats.AnchorInfo, error) {
 	}
 
 	return &anchorInfo, nil
+}
+
+// GetPlatName 获取平台名
+func (a *AnchorDouyin) GetPlatName() string {
+	return name
+}
+
+// GetStreamHeaders 请求直播流时的请求头
+func (a *AnchorDouyin) GetStreamHeaders() map[string]string {
+	return map[string]string{
+		"user-agent": comm.UAWin,
+	}
 }
 
 // 提取网页中的 RENDER_DATA

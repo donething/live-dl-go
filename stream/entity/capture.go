@@ -1,6 +1,4 @@
-// Package stream 捕获视频流
-
-package stream
+package entity
 
 import (
 	"fmt"
@@ -12,7 +10,7 @@ import (
 	"time"
 )
 
-// PrepareCapture 录制直播流到文件
+// PrepareCapture 准备录制直播流到文件
 func (s *Stream) PrepareCapture() error {
 	s.Path = filepath.Join(filepath.Dir(s.Path),
 		fmt.Sprintf("%d_%s", time.Now().Unix(), filepath.Base(s.Path)))

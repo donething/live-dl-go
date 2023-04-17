@@ -1,0 +1,16 @@
+# sites
+
+# 使用
+
+通过 `plats.GenAnchor` 生成对应平台的主播实例
+
+```go
+anchorSite, err := plats.GenAnchor(&anchor)
+if err != nil {
+    return err
+}
+```
+
+# 增加网站
+
+新增网站，需要实现 `IAnchor` 接口的方法
