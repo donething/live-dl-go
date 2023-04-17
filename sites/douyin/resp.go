@@ -1,5 +1,9 @@
 package douyin
 
+// 抖音的用户主页和直播间源代码中，都会携带一段ID为"RENDER_DATA"的脚本，里面含有数据信息
+// 获取：在页面控制台中执行 copy(decodeURIComponent(document.querySelector("#RENDER_DATA").text))
+// 发送请求需要携带 Cookie，而且经常失效。可以在浏览器的隐私模式下获取
+
 // RoomStatus 从 Web 直播间获取直播流
 //
 // 可以获取到直播流地址(flv 或 .m3u8)
