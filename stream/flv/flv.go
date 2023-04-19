@@ -11,13 +11,13 @@ type Stream struct {
 	*entity.Stream
 }
 
-// NewFlvStream 创建 Stream 的实例
-func NewFlvStream(title, streamUrl string, headers map[string]string, path string,
+// NewStream 创建 Stream 的实例
+func NewStream(title, streamUrl string, headers map[string]string, path string,
 	fileSizeThreshold int, handler hanlders.IHandler) entity.IStream {
 	return &Stream{
 		Stream: &entity.Stream{
 			Title:             title,
-			LiveStreamUrl:     streamUrl,
+			StreamUrl:         streamUrl,
 			Headers:           headers,
 			ChSegUrl:          make(chan string),
 			Path:              path,
@@ -36,29 +36,28 @@ func (s *Stream) Start() error {
 		return fmt.Errorf("准备录制flv流时出错：%w", err)
 	}
 
-	s.ChSegUrl <- s.LiveStreamUrl
+	s.ChSegUrl <- s.StreamUrl
 	close(s.ChSegUrl)
 	return nil
 }
 
-func (s *Stream) GetChErr() chan error {
-	return s.ChErr
+// Download 下载直播流、直链
+func Download(title, streamUrl string, headers map[string]string,
+	path string, handler hanlders.IHandler) error {
+	s := NewStream(title, streamUrl, headers, path, 0, handler)
+	err := s.Start()
+	if err != nil {
+		return err
+	}
+
+	err = <-s.GetStream().ChErr
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func (s *Stream) GetChRestart() chan bool {
-	return s.ChRestart
-}
-
-func (s *Stream) Reset(title, streamUrl string, headers map[string]string, path string,
-	fileSizeThreshold int, hanlder hanlders.IHandler) {
-	s.ChErr = make(chan error)
-	s.ChRestart = make(chan bool)
-	s.ChSegUrl = make(chan string)
-
-	s.Title = title
-	s.LiveStreamUrl = streamUrl
-	s.Headers = headers
-	s.Path = path
-	s.FileSizeThreshold = fileSizeThreshold
-	s.Handler = hanlder
+func (s *Stream) GetStream() *entity.Stream {
+	return s.Stream
 }

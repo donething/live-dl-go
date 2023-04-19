@@ -19,21 +19,21 @@ var (
 )
 
 func TestStream_StartM3u8(t *testing.T) {
-	u := "http://bjlive.szsbtech.com/record/vOowtobdl4dIdpe.m3u8?auth_key=1681753680-0-0-65d0eb722cfda380e42dae9cec4bbb1a"
+	u := "http://bjlive.szsbtech.com/record/dXqwcrKjKA4upV2.m3u8?auth_key=1681871804-0-0-72d1b56b2d5fcc20a4607970a0b46769"
 	p := "D:/Tmp/live/zuji.ts"
-	s := NewM3u8Stream(title, u, nil, p, 10*1024*1024, &tgHandler)
+	s := NewStream(title, u, nil, p, 10*1024*1024, &tgHandler)
 
 	err := s.Start()
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	err = <-s.GetChErr()
+	err = <-s.GetStream().ChErr
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	restart := <-s.GetChRestart()
+	restart := <-s.GetStream().ChRestart
 	t.Logf("重新下载直播流：%v", restart)
 	if restart {
 		TestStream_StartM3u8(t)

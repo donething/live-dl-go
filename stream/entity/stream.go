@@ -9,7 +9,7 @@ type Stream struct {
 	// 标题。注意作为TG的caption时，需要转义
 	Title string
 	// 直播流的地址
-	LiveStreamUrl string
+	StreamUrl string
 	// 请求头
 	Headers map[string]string
 	// 用于发送视频（切片）的下载URL
@@ -27,4 +27,19 @@ type Stream struct {
 	// 每保存一个视频文件就重新开始获取视频流。这样避免手动为视频添加头信息
 	// 需要手动实现重新开始下载，参考 `StartAnchor`函数
 	ChRestart chan bool
+}
+
+// Reset 重置信息。传递需要设置或修改的参数
+func (s *Stream) Reset(title, streamUrl string, headers map[string]string, path string,
+	fileSizeThreshold int, hanlder hanlders.IHandler) {
+	s.ChErr = make(chan error)
+	s.ChRestart = make(chan bool)
+	s.ChSegUrl = make(chan string)
+
+	s.Title = title
+	s.StreamUrl = streamUrl
+	s.Headers = headers
+	s.Path = path
+	s.FileSizeThreshold = fileSizeThreshold
+	s.Handler = hanlder
 }

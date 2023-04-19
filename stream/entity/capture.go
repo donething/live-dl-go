@@ -28,14 +28,18 @@ func (s *Stream) PrepareCapture() error {
 // 所以要在子goroutine中运行，以免死锁：`go s.save()`
 func (s *Stream) save(file *os.File) {
 	var restart = false
-	// 需要穿参数，因为可能在等待 channel 传数据时，restart 为 true，然后`PrepareCapture()`重新执行
+	// 需要通过参数p传递，因为可能在等待 channel 传数据时，restart 为 true，然后`PrepareCapture()`重新执行
 	// 导致 s.Path 路径改变，导致发送给 ChHandle 的 Path 错误
 	defer func(p string) {
 		// 传递是否需要重新开始直播流流保存到新文件
+		timeout := time.After(3 * time.Second)
 	LabelRestart:
 		for {
 			select {
 			case s.ChRestart <- restart:
+				break LabelRestart
+			case <-timeout:
+				logger.Info.Printf("等待超时：发送新开始录制的信号\n")
 				break LabelRestart
 			default:
 				// 	继续等待

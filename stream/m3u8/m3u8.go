@@ -12,13 +12,13 @@ type Stream struct {
 	*entity.Stream
 }
 
-// NewM3u8Stream 创建 Stream 的实例
-func NewM3u8Stream(title, streamUrl string, headers map[string]string, path string,
+// NewStream 创建 Stream 的实例
+func NewStream(title, streamUrl string, headers map[string]string, path string,
 	fileSizeThreshold int, handler hanlders.IHandler) entity.IStream {
 	return &Stream{
 		Stream: &entity.Stream{
 			Title:             title,
-			LiveStreamUrl:     streamUrl,
+			StreamUrl:         streamUrl,
 			Headers:           headers,
 			ChSegUrl:          make(chan string),
 			Path:              path,
@@ -41,11 +41,15 @@ func (s *Stream) Start() error {
 	return nil
 }
 
+func (s *Stream) GetStream() *entity.Stream {
+	return s.Stream
+}
+
 func (s *Stream) sendSeq() {
 	for {
 		// 解码 m3u8 视频列表
 		m := m3u8decoder.New()
-		err := m.Decode(s.LiveStreamUrl, s.Headers)
+		err := m.Decode(s.StreamUrl, s.Headers)
 		if err != nil {
 			s.Stream.ChErr <- fmt.Errorf("解码 m3u8 文件出错：%w", err)
 			return
@@ -67,26 +71,4 @@ func (s *Stream) sendSeq() {
 		}
 	}
 	// 	不用返回 nil 给 s.chErr，以免返回后主函数继续执行下一步，而此时直播流还没有下载成功（只是发送URL成功）
-}
-
-func (s *Stream) GetChErr() chan error {
-	return s.ChErr
-}
-
-func (s *Stream) GetChRestart() chan bool {
-	return s.ChRestart
-}
-
-func (s *Stream) Reset(title, streamUrl string, headers map[string]string, path string,
-	fileSizeThreshold int, hanlder hanlders.IHandler) {
-	s.ChErr = make(chan error)
-	s.ChRestart = make(chan bool)
-	s.ChSegUrl = make(chan string)
-
-	s.Title = title
-	s.LiveStreamUrl = streamUrl
-	s.Headers = headers
-	s.Path = path
-	s.FileSizeThreshold = fileSizeThreshold
-	s.Handler = hanlder
 }

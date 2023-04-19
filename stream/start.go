@@ -13,10 +13,6 @@ import (
 	"sync"
 )
 
-// NewStreamType 函数类型，用于创建`Stream`
-type NewStreamType func(title, streamUrl string, headers map[string]string, path string,
-	fileSizeThreshold int, handler hanlders.IHandler) streamentity.IStream
-
 // StartAnchor 开始录制直播流
 //
 // 参数为 正在录制表、直播流（Flv、M3u8）、主播信息、临时文件存储路径、单视频大小、视频处理器
@@ -74,7 +70,7 @@ LabelNewFile:
 	}
 
 	// 设置流的信息
-	stream.Reset(title, info.StreamUrl, headers, path, fileSizeThreshold, handler)
+	stream.GetStream().Reset(title, info.StreamUrl, headers, path, fileSizeThreshold, handler)
 
 	// 开始录制直播流
 	logger.Info.Printf("😙开始录制直播间【%s】(%+v)\n", info.Name, anchor)
@@ -87,14 +83,14 @@ LabelNewFile:
 	capturing.Store(key, true)
 
 	// 等待下载阶段的错误
-	err = <-stream.GetChErr()
+	err = <-stream.GetStream().ChErr
 	if err != nil {
 		capturing.Delete(key)
 		return err
 	}
 
 	// 需要用新的文件存储视频
-	restart := <-stream.GetChRestart()
+	restart := <-stream.GetStream().ChRestart
 	if restart {
 		isNewFile = true
 		goto LabelNewFile
