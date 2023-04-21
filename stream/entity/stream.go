@@ -19,7 +19,7 @@ type Stream struct {
 	// 视频文件的保存路径
 	Path string
 	// 文件的最大字节数，为 0 表示无限制。建议 1GB: 1024*1024*1024
-	FileSizeThreshold int
+	FileSizeThreshold int64
 	// 文件处理器
 	Handler hanlders.IHandler
 	// 因为下载视频到处理视频，要经过多个 goroutine，用 channel 传递错误信息
@@ -31,7 +31,7 @@ type Stream struct {
 
 // Reset 重置信息。传递需要设置或修改的参数
 func (s *Stream) Reset(title, streamUrl string, headers map[string]string, path string,
-	fileSizeThreshold int, hanlder hanlders.IHandler) {
+	fileSizeThreshold int64, hanlder hanlders.IHandler) {
 	s.ChErr = make(chan error)
 	s.ChRestart = make(chan bool)
 	s.ChSegUrl = make(chan string)

@@ -68,7 +68,7 @@ func (s *Stream) save(file *os.File) {
 	}(s.Path)
 
 	// 当前写入文件的字节计数器
-	var fileSizeCounter = 0
+	var fileSizeCounter int64 = 0
 	// 缓存
 	var buf = make([]byte, 32*1024)
 
@@ -108,7 +108,7 @@ LabelSegs:
 			// 统计当前文件的大小
 			// 如果视频大小达到阈值，就重新开始保存直播流到新文件中
 			// 需要重新打开直播流读取，这样避免手动为视频添加头信息
-			if fileSizeCounter += n; s.FileSizeThreshold != 0 && fileSizeCounter >= s.FileSizeThreshold {
+			if fileSizeCounter += int64(n); s.FileSizeThreshold != 0 && fileSizeCounter >= s.FileSizeThreshold {
 				fileSizeCounter = 0
 				restart = true
 				// 当下载m3u8时，s.ChSegUrl 一直有片段可以接收，仅通过 break 无法跳出2个循环

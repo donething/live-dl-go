@@ -13,7 +13,7 @@ type Stream struct {
 
 // NewStream 创建 Stream 的实例
 func NewStream(title, streamUrl string, headers map[string]string, path string,
-	fileSizeThreshold int, handler hanlders.IHandler) entity.IStream {
+	fileSizeThreshold int64, handler hanlders.IHandler) entity.IStream {
 	return &Stream{
 		Stream: &entity.Stream{
 			Title:             title,
