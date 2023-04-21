@@ -31,6 +31,8 @@ func (s *Stream) save(file *os.File) {
 	// 需要通过参数p传递，因为可能在等待 channel 传数据时，restart 为 true，然后`PrepareCapture()`重新执行
 	// 导致 s.Path 路径改变，导致发送给 ChHandle 的 Path 错误
 	defer func(p string) {
+		file.Close()
+
 		// 传递是否需要重新开始直播流流保存到新文件
 		timeout := time.After(3 * time.Second)
 	LabelRestart:
@@ -47,9 +49,6 @@ func (s *Stream) save(file *os.File) {
 				time.Sleep(1 * time.Second)
 			}
 		}
-
-		// 	后台处理视频
-		file.Close()
 	LabelHandle:
 		for {
 			select {
