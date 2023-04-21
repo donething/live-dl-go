@@ -30,7 +30,7 @@ func TestStartFlv(t *testing.T) {
 	}
 
 	err := StartFlvAnchor(capturing, anchor, "D:/Tmp/live/bili_8739477.flv",
-		40*1024*1024, &tgHandler)
+		10*1024*1024, &tgHandler)
 	if err != nil {
 		t.Fatal(err)
 	}

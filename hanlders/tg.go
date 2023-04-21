@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/donething/utils-go/dotext"
 	"github.com/donething/utils-go/dotg"
-	"os"
 	"time"
 )
 
@@ -20,24 +19,7 @@ type TGHandler struct {
 
 // Handle 发送**视频**到 TG
 func (tg *TGHandler) Handle(info *InfoHandle) error {
-	dst := info.Path
-	media, dst, thumb, err := dotg.GenTgMedia(info.Path, info.Title)
-	_, err = tg.TG.SendMediaGroup(tg.ChatID, []*dotg.InputMedia{media})
-	if err != nil {
-		return fmt.Errorf("发送视频到TG出错：%w", err)
-	}
-
-	// 删除视频文件
-	err = os.Remove(thumb)
-	if err != nil {
-		return fmt.Errorf("删除视频封面出错：%w", err)
-	}
-	err = os.Remove(dst)
-	if err != nil {
-		return fmt.Errorf("删除转码后的视频出错：%w", err)
-	}
-
-	return nil
+	return tg.TG.SendVideo(tg.ChatID, info.Title, info.Path, info.FileSizeThreshold, "", false)
 }
 
 // GenTgCaption 生成TG的标题Caption

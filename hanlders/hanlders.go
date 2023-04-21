@@ -17,6 +17,10 @@ type InfoHandle struct {
 	Title string
 	// 文件处理器。在 handler worker 中将调用，来处理文件
 	Handler IHandler
+	// 上传到TG时的分段大小，为 0 不分段
+	FileSizeThreshold int64
+	// 	上传成功是否保留源文件
+	Reserve bool
 }
 
 // 处理文件的goroutine数量
