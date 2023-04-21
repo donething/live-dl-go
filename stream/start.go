@@ -52,7 +52,8 @@ LabelNewFile:
 		if ss, ok := s.(streamentity.IStream); ok {
 			bytes = dotext.BytesHumanReadable(uint64(ss.GetStream().GetBytes()))
 		}
-		logger.Info.Printf("😊【%s】正在录制(%+v)…本次已读取 %s\n", info.Name, anchor, bytes)
+		logger.Info.Printf("😊【%s】正在录制(%+v)…本次已读取 %s/%s\n", info.Name, anchor, bytes,
+			dotext.BytesHumanReadable(uint64(fileSizeThreshold)))
 		return nil
 	}
 
