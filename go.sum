@@ -1,11 +1,5 @@
-github.com/donething/utils-go v0.0.30-0.20230421122717-65ac7835985a h1:PXsUxX6VFsTRuvb7LIjP2IlOUgviq88sL2PbQD8YNww=
-github.com/donething/utils-go v0.0.30-0.20230421122717-65ac7835985a/go.mod h1:xnWCBrhrm9iu6PLrmV23AYpUmidJSfXHwMJV9SrHNK0=
-github.com/donething/utils-go v0.0.30-0.20230421135329-bcf4385bb819 h1:u/r5AIWc1ebhFRiOPb6DFgZTi6m3VdFiZi5/k3IAS74=
-github.com/donething/utils-go v0.0.30-0.20230421135329-bcf4385bb819/go.mod h1:xnWCBrhrm9iu6PLrmV23AYpUmidJSfXHwMJV9SrHNK0=
-github.com/donething/utils-go v0.0.30-0.20230421142457-80cfc77cf596 h1:vP9eMKl0c5ncGpyD70iLr7uSHyg4OIsEZcRILhIIDqY=
-github.com/donething/utils-go v0.0.30-0.20230421142457-80cfc77cf596/go.mod h1:xnWCBrhrm9iu6PLrmV23AYpUmidJSfXHwMJV9SrHNK0=
-github.com/donething/utils-go v0.0.30-0.20230421142942-cfc984d699c5 h1:B2jLEJlXJNsbELcM493wzuIsJlP5DboyJ1Ut9B5yExs=
-github.com/donething/utils-go v0.0.30-0.20230421142942-cfc984d699c5/go.mod h1:xnWCBrhrm9iu6PLrmV23AYpUmidJSfXHwMJV9SrHNK0=
+github.com/donething/utils-go v0.0.30-0.20230421145736-d4f8d3f82a1c h1:abORzjNCcK3tQWSJ0ZQER0ZnKakaLOTlhs9CJENAuBI=
+github.com/donething/utils-go v0.0.30-0.20230421145736-d4f8d3f82a1c/go.mod h1:xnWCBrhrm9iu6PLrmV23AYpUmidJSfXHwMJV9SrHNK0=
 github.com/saintfish/chardet v0.0.0-20120816061221-3af4cd4741ca h1:NugYot0LIVPxTvN8n+Kvkn6TrbMyxQiuvKdEwFdR9vI=
 github.com/saintfish/chardet v0.0.0-20120816061221-3af4cd4741ca/go.mod h1:uugorj2VCxiV1x+LzaIdVa9b4S4qGAcH6cbhh4qVxOU=
 golang.org/x/net v0.7.0 h1:rJrUqqhjsgNp7KqAIc25s9pZnjU7TUcSY7HcVZjdn1g=
