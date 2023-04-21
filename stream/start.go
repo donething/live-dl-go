@@ -22,7 +22,7 @@ import (
 func StartAnchor(capturing *sync.Map, stream streamentity.IStream, anchor entity.Anchor, path string,
 	fileSizeThreshold int64, handler hanlders.IHandler) error {
 	// 此次是否是换新文件保存视频
-	// 用于当正在录播且isNewFile为真时，不退出
+	// 用于当正在录播且isNewFile为真时，不退出（仅当定时获取主播状态决定是否录制时触发）
 	var isNewFile = false
 
 	anchorSite, err := plats.GenAnchor(&anchor)
