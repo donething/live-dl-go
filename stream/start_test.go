@@ -16,9 +16,8 @@ var (
 	capturing = &sync.Map{}
 
 	tgHandler = hanlders.TGHandler{
-		TG:        dotg.NewTGBot(os.Getenv("MY_TG_TOKEN")),
-		LocalPort: 0,
-		ChatID:    os.Getenv("MY_TG_CHAT_LIVE"),
+		TG:     dotg.NewTGBot(os.Getenv("MY_TG_TOKEN")),
+		ChatID: os.Getenv("MY_TG_CHAT_LIVE"),
 	}
 )
 

@@ -11,8 +11,6 @@ import (
 type TGHandler struct {
 	// TGBot 的实例
 	TG *dotg.TGBot
-	// 如果开启 TG 本地服务的端口
-	LocalPort int
 	// 上传到的聊天频道
 	ChatID string
 }
