@@ -9,6 +9,7 @@ import (
 	streamentity "github.com/donething/live-dl-go/stream/entity"
 	"github.com/donething/live-dl-go/stream/flv"
 	"github.com/donething/live-dl-go/stream/m3u8"
+	"github.com/donething/utils-go/dotext"
 	"strings"
 	"sync"
 )
@@ -45,9 +46,13 @@ LabelNewFile:
 	}
 
 	// 判断此次是否需要录制视频
-	// 存在表示正在录制，不重复录制，返回
-	if _, exists := capturing.Load(key); !isNewFile && exists {
-		logger.Info.Printf("😊【%s】正在录制…(%+v)\n", info.Name, anchor)
+	// 存在表示正在录制且此次不用换新文件存储，不重复录制，返回
+	if _, exists := capturing.Load(key); exists && !isNewFile {
+		var bytes = ""
+		if stream != nil {
+			bytes = dotext.BytesHumanReadable(uint64(stream.GetStream().GetBytes()))
+		}
+		logger.Info.Printf("😊【%s】正在录制…本次已读取 %s\n", info.Name, bytes)
 		return nil
 	}
 

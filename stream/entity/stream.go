@@ -2,6 +2,7 @@ package entity
 
 import (
 	"github.com/donething/live-dl-go/hanlders"
+	"sync"
 )
 
 // Stream 直播流
@@ -27,6 +28,10 @@ type Stream struct {
 	// 每保存一个视频文件就重新开始获取视频流。这样避免手动为视频添加头信息
 	// 需要手动实现重新开始下载，参考 `StartAnchor`函数
 	ChRestart chan bool
+
+	// 本次已读取的字节数
+	Bytes   int64
+	BytesMu sync.Mutex
 }
 
 // Reset 重置信息。传递需要设置或修改的参数
@@ -36,10 +41,24 @@ func (s *Stream) Reset(title, streamUrl string, headers map[string]string, path 
 	s.ChRestart = make(chan bool)
 	s.ChSegUrl = make(chan string)
 
+	s.BytesMu.Lock()
+	s.Bytes = 0
+	s.BytesMu.Unlock()
+
 	s.Title = title
 	s.StreamUrl = streamUrl
 	s.Headers = headers
 	s.Path = path
 	s.FileSizeThreshold = fileSizeThreshold
 	s.Handler = hanlder
+}
+
+// GetBytes 获取本次已读取的字节数
+func (s *Stream) GetBytes() int64 {
+	var bytes int64
+	s.BytesMu.Lock()
+	bytes = s.Bytes
+	s.BytesMu.Unlock()
+
+	return bytes
 }
