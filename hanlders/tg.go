@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"github.com/donething/utils-go/dotext"
 	"github.com/donething/utils-go/dotg"
+	"github.com/donething/utils-go/dovideo"
 	"os"
-	"os/exec"
+	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -19,84 +21,77 @@ type TGHandler struct {
 	ChatID string
 }
 
-// Handle 发送到 TG
+// Handle 发送**视频**到 TG
 func (tg *TGHandler) Handle(info *InfoHandle) error {
-	// 转码
-	dst := info.Path + ".mp4"
-	cover := info.Path + ".jpg"
+	dst := info.Path
+	// 不是 mp4 格式 的视频，才要转码为 mp4
+	if strings.ToLower(filepath.Ext(info.Path)) != ".mp4" {
+		dst = strings.TrimSuffix(info.Path, filepath.Ext(info.Path)) + ".mp4"
+		err := dovideo.Convt(info.Path, dst)
+		if err != nil {
+			return fmt.Errorf("转码失败(%s)：\n%s", info.Path, err)
+		}
 
-	cmd := exec.Command("ffmpeg", "-hide_banner", "-i", info.Path, "-c", "copy", dst)
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		return fmt.Errorf("转码失败(%s)：\n%s: %w", info.Path, string(output), err)
+		// 删除原视频。本来可以放在末尾的，但是占用磁盘空间，所以在转码成功后删除
+		err = os.Remove(info.Path)
+		if err != nil {
+			return fmt.Errorf("删除原视频出错：%w", err)
+		}
 	}
 
 	// 获取视频封面
-	// 可以省略压缩图片："-vf", "scale=512:512:force_original_aspect_ratio=decrease"
-	cmd = exec.Command("ffmpeg", "-hide_banner", "-i", info.Path, "-ss",
-		"00:00:03", "-frames:v", "1", cover)
-	output, err = cmd.CombinedOutput()
+	cover := strings.TrimSuffix(dst, filepath.Ext(dst)) + ".jpg"
+	err := dovideo.GetFrame(dst, cover, "00:00:03", "320:320")
 	if err != nil {
-		return fmt.Errorf("获取视频封面出错：%s: %w", string(output), err)
-	}
-
-	// 删除原视频。本来可以放在末尾的，但是占用磁盘空间，所以在转码成功后删除
-	err = os.Remove(info.Path)
-	if err != nil {
-		return fmt.Errorf("删除原视频出错：%w", err)
+		return fmt.Errorf("获取视频封面出错(%s)：%s", dst, err)
 	}
 
 	// 上传到 TG
-	// name := filepath.Base(dst)
-	// // 文件标题
-	// now := dotext.FormatDate(time.Now(), "20060102")
-	// caption := dotg.LegalMk(fmt.Sprintf("#%s #%s %s _%s_", info.Name, info.Plat, now, info.Title))
-	// // 标题
-	// open := fmt.Sprintf("[直播间](%s)", info.WebUrl)
-	// caption = fmt.Sprintf("%s %s", caption, open)
 
 	// 数据
-	var vData interface{}
-	var cData interface{}
-	if tg.LocalPort != 0 {
-		// 通过 TG 本地服务上传
-		vData = fmt.Sprintf("file://%s", dst)
-		cData = fmt.Sprintf("file://%s", cover)
-	} else {
-		// 直传
-		bs, err := os.ReadFile(dst)
-		if err != nil {
-			return fmt.Errorf("读取视频文件出错：%w", err)
-		}
-		vData = bs
-
-		bs, err = os.ReadFile(cover)
-		if err != nil {
-			return fmt.Errorf("读取视频封面文件出错：%w", err)
-		}
-		cData = bs
+	// 直传
+	vbs, err := os.Open(dst)
+	if err != nil {
+		return fmt.Errorf("读取视频文件出错：%w", err)
 	}
 
+	cbs, err := os.Open(cover)
+	if err != nil {
+		return fmt.Errorf("读取视频封面文件出错：%w", err)
+	}
+
+	w, h, err := dovideo.GetResolution(dst)
+	if err != nil {
+		return err
+	}
 	m := &dotg.InputMedia{
-		Type:              dotg.TypeVideo,
-		Media:             vData,
-		Thumbnail:         cData,
-		Caption:           info.Title,
-		ParseMode:         "MarkdownV2",
-		SupportsStreaming: true,
+		MediaData: &dotg.MediaData{
+			Type:              dotg.TypeVideo,
+			Caption:           info.Title,
+			ParseMode:         "MarkdownV2",
+			Width:             w,
+			Height:            h,
+			SupportsStreaming: true,
+		},
+		Media:     vbs,
+		Thumbnail: cbs,
 	}
 	_, err = tg.TG.SendMediaGroup(tg.ChatID, []*dotg.InputMedia{m})
 	if err != nil {
-		return fmt.Errorf("发送视频出错到TG：%w", err)
+		return fmt.Errorf("发送视频到TG出错：%w", err)
 	}
 
+	// 删除视频文件
 	err = os.Remove(cover)
 	if err != nil {
-		return fmt.Errorf("删除转码视频出错：%w", err)
+		return fmt.Errorf("删除视频封面出错：%w", err)
+	}
+	err = os.Remove(dst)
+	if err != nil {
+		return fmt.Errorf("删除转码后的视频出错：%w", err)
 	}
 
-	err = os.Remove(dst)
-	return err
+	return nil
 }
 
 // GenTgCaption 生成TG的标题Caption

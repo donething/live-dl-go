@@ -25,12 +25,12 @@ var (
 // 哔哩哔哩的用户 ID
 func TestStartFlv(t *testing.T) {
 	anchor := entity.Anchor{
-		ID:   "8739477",
+		ID:   "50329118",
 		Plat: bili.Plat,
 	}
 
 	err := StartFlvAnchor(capturing, anchor, "D:/Tmp/live/bili_8739477.flv",
-		20*1024*1024, &tgHandler)
+		40*1024*1024, &tgHandler)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -15,7 +15,7 @@ type InfoHandle struct {
 	Path string
 	// 标题。注意作为TG的caption时，需要转义
 	Title string
-	// 文件处理器
+	// 文件处理器。在 handler worker 中将调用，来处理文件
 	Handler IHandler
 }
 
@@ -48,7 +48,7 @@ func handler() {
 		logger.Info.Printf("开始处理视频文件：%s\n", info.Path)
 		err := info.Handler.Handle(info)
 		if err != nil {
-			logger.Error.Printf("处理视频文件出错(%s)：%s\n", info.Path, err)
+			logger.Error.Printf("处理视频文件出错：%s\n", err)
 			continue
 		}
 	}
