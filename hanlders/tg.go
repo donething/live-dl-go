@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/donething/utils-go/dotext"
 	"github.com/donething/utils-go/dotg"
-	"github.com/donething/utils-go/dovideo"
 	"os"
 	"time"
 )
@@ -22,7 +21,7 @@ type TGHandler struct {
 // Handle 发送**视频**到 TG
 func (tg *TGHandler) Handle(info *InfoHandle) error {
 	dst := info.Path
-	media, dst, thumb, err := dovideo.GenTgMedia(info.Path, info.Title)
+	media, dst, thumb, err := dotg.GenTgMedia(info.Path, info.Title)
 	_, err = tg.TG.SendMediaGroup(tg.ChatID, []*dotg.InputMedia{media})
 	if err != nil {
 		return fmt.Errorf("发送视频到TG出错：%w", err)
