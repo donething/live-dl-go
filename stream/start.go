@@ -47,12 +47,12 @@ LabelNewFile:
 
 	// 判断此次是否需要录制视频
 	// 存在表示正在录制且此次不用换新文件存储，不重复录制，返回
-	if _, exists := capturing.Load(key); exists && !isNewFile {
+	if s, exists := capturing.Load(key); exists && !isNewFile {
 		var bytes = ""
-		if stream != nil {
-			bytes = dotext.BytesHumanReadable(uint64(stream.GetStream().GetBytes()))
+		if ss, ok := s.(streamentity.IStream); ok {
+			bytes = dotext.BytesHumanReadable(uint64(ss.GetStream().GetBytes()))
 		}
-		logger.Info.Printf("😊【%s】正在录制…本次已读取 %s\n", info.Name, bytes)
+		logger.Info.Printf("😊【%s】正在录制(%+v)…本次已读取 %s\n", info.Name, anchor, bytes)
 		return nil
 	}
 
@@ -85,7 +85,7 @@ LabelNewFile:
 	}
 
 	// 记录正在录制的标识
-	capturing.Store(key, true)
+	capturing.Store(key, stream)
 
 	// 等待下载阶段的错误
 	err = <-stream.GetStream().ChErr
