@@ -41,7 +41,7 @@ func (s *Stream) save(file *os.File) {
 			case s.ChRestart <- restart:
 				break LabelRestart
 			case <-timeout:
-				logger.Info.Printf("等待超时：发送新开始录制的信号\n")
+				logger.Info.Printf("等待超时：在发送新开始录制的信号时\n")
 				break LabelRestart
 			default:
 				// 	继续等待
