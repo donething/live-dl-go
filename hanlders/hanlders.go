@@ -52,7 +52,7 @@ func handler() {
 		logger.Info.Printf("开始处理视频文件：%s\n", info.Path)
 		err := info.Handler.Handle(info)
 		if err != nil {
-			logger.Error.Printf("处理视频文件出错：%s\n", err)
+			logger.Error.Printf("处理视频文件出错(%s)：%s\n", info.Path, err)
 			continue
 		}
 	}
