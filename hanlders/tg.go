@@ -2,9 +2,7 @@ package hanlders
 
 import (
 	"fmt"
-	"github.com/donething/utils-go/dotext"
 	"github.com/donething/utils-go/dotg"
-	"time"
 )
 
 // TGHandler 发送到 TG
@@ -24,7 +22,6 @@ func (tg *TGHandler) Handle(info *InfoHandle) error {
 // GenTgCaption 生成TG的标题Caption
 //
 // 参数为 主播名、所在平台名、日期、直播间标题，如：爱迟到的某、哔哩哔哩、20230415、进来看看
-func GenTgCaption(name, plat, roomTitle string) string {
-	now := dotext.FormatDate(time.Now(), "20060102")
-	return dotg.LegalMk(fmt.Sprintf("#%s #%s %s _%s_", name, plat, now, roomTitle))
+func GenTgCaption(name, plat, start string, roomTitle string) string {
+	return dotg.LegalMk(fmt.Sprintf("#%s #%s %s _%s_", name, plat, start, roomTitle))
 }

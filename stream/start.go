@@ -12,6 +12,7 @@ import (
 	"github.com/donething/utils-go/dotext"
 	"strings"
 	"sync"
+	"time"
 )
 
 // StartAnchor 开始录制直播流
@@ -24,6 +25,9 @@ func StartAnchor(capturing *sync.Map, stream streamentity.IStream, anchor entity
 	// 此次是否是换新文件保存视频
 	// 用于当正在录播且isNewFile为真时，不退出（仅当定时获取主播状态决定是否录制时触发）
 	var isNewFile = false
+
+	// 开始录制该主播的时间
+	start := dotext.FormatDate(time.Now(), "20060102")
 
 	anchorSite, err := plats.GenAnchor(&anchor)
 	if err != nil {
@@ -61,7 +65,7 @@ LabelNewFile:
 
 	// 生成标题
 	// 平台对应的网站名
-	title := hanlders.GenTgCaption(info.Name, anchorSite.GetPlatName(), info.Title)
+	title := hanlders.GenTgCaption(info.Name, anchorSite.GetPlatName(), start, info.Title)
 	headers := anchorSite.GetStreamHeaders()
 
 	// 如果没有指定直播流的类型，就自动匹配
