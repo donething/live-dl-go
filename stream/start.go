@@ -9,10 +9,16 @@ import (
 	streamentity "github.com/donething/live-dl-go/stream/entity"
 	"github.com/donething/live-dl-go/stream/flv"
 	"github.com/donething/live-dl-go/stream/m3u8"
+	"github.com/donething/utils-go/domath"
 	"github.com/donething/utils-go/dotext"
 	"strings"
 	"sync"
 	"time"
+)
+
+const (
+	// 获取主播信息失败的的最大次数
+	maxFail = 3
 )
 
 // StartAnchor 开始录制直播流
@@ -29,6 +35,9 @@ func StartAnchor(capturing *sync.Map, stream streamentity.IStream, anchor entity
 	// 开始录制该主播的时间
 	start := dotext.FormatDate(time.Now(), "20060102")
 
+	// 获取主播信息失败的次数
+	fail := 0
+
 	anchorSite, err := plats.GenAnchor(&anchor)
 	if err != nil {
 		return err
@@ -38,8 +47,17 @@ func StartAnchor(capturing *sync.Map, stream streamentity.IStream, anchor entity
 LabelNewFile:
 	info, err := anchorSite.GetAnchorInfo()
 	if err != nil {
+		fail++
+
+		// 重试
+		if fail <= maxFail {
+			time.Sleep(time.Duration(domath.RandInt(1, 3)) * time.Second)
+			goto LabelNewFile
+		}
+
 		return err
 	}
+
 	// 是否正在录播的键
 	key := GenCapturingKey(&anchor)
 
