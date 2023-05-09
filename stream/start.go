@@ -51,6 +51,7 @@ LabelNewFile:
 
 		// 重试
 		if fail <= maxFail {
+			logger.Info.Printf("重试获取主播的信息(%+v)\n", anchor)
 			time.Sleep(time.Duration(domath.RandInt(1, 3)) * time.Second)
 			goto LabelNewFile
 		}
