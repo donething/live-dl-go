@@ -39,7 +39,7 @@ func (s *Stream) Reset(title, streamUrl string, headers map[string]string, path 
 	fileSizeThreshold int64, hanlder hanlders.IHandler) {
 	s.ChErr = make(chan error)
 	s.ChRestart = make(chan bool)
-	s.ChSegUrl = make(chan string)
+	s.ChSegUrl = make(chan string, 10)
 
 	s.BytesMu.Lock()
 	s.Bytes = 0

@@ -37,7 +37,7 @@ func (d *M3u8Decoder) Decode(url string, headers map[string]string) error {
 	defer resp.Body.Close()
 
 	if resp.StatusCode < 200 || resp.StatusCode > 399 {
-		return fmt.Errorf("读取m3u8文件的响应码：%s", resp.Status)
+		return fmt.Errorf("读取m3u8文件的响应码：%s (URL: %s)", resp.Status, url)
 	}
 
 	bs, err := io.ReadAll(resp.Body)

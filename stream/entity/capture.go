@@ -49,6 +49,7 @@ func (s *Stream) save(file *os.File) {
 				time.Sleep(1 * time.Second)
 			}
 		}
+
 	LabelHandle:
 		for {
 			select {

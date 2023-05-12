@@ -10,6 +10,7 @@ import (
 // Stream m3u8 直播流
 type Stream struct {
 	*entity.Stream
+	hadInit bool
 }
 
 // NewStream 创建 Stream 的实例
@@ -36,7 +37,9 @@ func (s *Stream) Start() error {
 		return fmt.Errorf("准备录制m3u8流时出错：%w", err)
 	}
 
-	go s.sendSeq()
+	if !s.hadInit {
+		go s.sendSeq()
+	}
 
 	return nil
 }
@@ -46,6 +49,9 @@ func (s *Stream) GetStream() *entity.Stream {
 }
 
 func (s *Stream) sendSeq() {
+	s.hadInit = true
+	urlsHistory := NewUrlsHistory(MaxUrlsHistory)
+
 	for {
 		// 解码 m3u8 视频列表
 		m := m3u8decoder.New()
@@ -63,6 +69,10 @@ func (s *Stream) sendSeq() {
 
 		// 发送切片的 URL 下载
 		for _, seg := range m.Segments {
+			if exists := urlsHistory.Exists(seg.URL); exists {
+				continue
+			}
+
 			select {
 			case s.ChSegUrl <- seg.URL:
 			default:

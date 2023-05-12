@@ -2,7 +2,6 @@ package stream
 
 import (
 	"github.com/donething/live-dl-go/hanlders"
-	"github.com/donething/live-dl-go/sites/bili"
 	"github.com/donething/live-dl-go/sites/douyin"
 	"github.com/donething/live-dl-go/sites/entity"
 	"github.com/donething/live-dl-go/sites/zuji"
@@ -19,51 +18,11 @@ var (
 		TG:     dotg.NewTGBot(os.Getenv("MY_TG_TOKEN")),
 		ChatID: os.Getenv("MY_TG_CHAT_LIVE"),
 	}
+
+	localHandle = hanlders.LocalHanlder{}
 )
 
-// 哔哩哔哩的用户 ID
-func TestStartFlv(t *testing.T) {
-	anchor := entity.Anchor{
-		ID:   "50329118",
-		Plat: bili.Plat,
-	}
-
-	err := StartFlvAnchor(capturing, anchor, "D:/Tmp/live/bili_8739477.flv",
-		10*1024*1024, &tgHandler)
-	if err != nil {
-		t.Fatal(err)
-	}
-}
-
-// 抖音的直播间号
-func TestStartFlv2(t *testing.T) {
-	anchor := entity.Anchor{
-		ID:   "249406961231",
-		Plat: douyin.Plat,
-	}
-
-	err := StartFlvAnchor(capturing, anchor, "D:/Tmp/live/douyin_249406961231.flv",
-		10*1024*1024, &tgHandler)
-	if err != nil {
-		t.Fatal(err)
-	}
-}
-
-// 足迹的用户ID
-func TestStartM3u8(t *testing.T) {
-	anchor := entity.Anchor{
-		ID:   "15722883",
-		Plat: zuji.Plat,
-	}
-
-	err := StartM3u8Anchor(capturing, anchor, "D:/Tmp/live/zuji_61667788.flv",
-		30*1024*1024, &tgHandler)
-	if err != nil {
-		t.Fatal(err)
-	}
-}
-
-func TestStartAnchor(t *testing.T) {
+func TestStartAnchorFlv(t *testing.T) {
 	anchor := entity.Anchor{
 		ID:   "249406961231",
 		Plat: douyin.Plat,
@@ -71,6 +30,19 @@ func TestStartAnchor(t *testing.T) {
 
 	err := StartAnchor(capturing, nil, anchor, "D:/Tmp/live/douyin_249406961231.flv",
 		10*1024*1024, &tgHandler)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestStartAnchorM3u8(t *testing.T) {
+	anchor := entity.Anchor{
+		ID:   "15722883",
+		Plat: zuji.Plat,
+	}
+
+	err := StartAnchor(capturing, nil, anchor, "D:/Tmp/live/zuji_15722883.ts",
+		5*1024*1024, &localHandle)
 	if err != nil {
 		t.Fatal(err)
 	}

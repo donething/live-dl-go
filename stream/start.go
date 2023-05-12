@@ -44,16 +44,16 @@ func StartAnchor(capturing *sync.Map, stream streamentity.IStream, anchor entity
 	}
 
 	// 	换新文件保存视频，需要重新读取直播流的地址，以防旧的地址失效
-LabelNewFile:
+LabelNewFileFlv:
 	info, err := anchorSite.GetAnchorInfo()
 	if err != nil {
 		fail++
 
 		// 重试
 		if fail <= maxFail {
-			logger.Info.Printf("重试获取主播的信息(%+v)\n", anchor)
+			logger.Warn.Printf("重试获取主播的信息(%+v)\n", anchor)
 			time.Sleep(time.Duration(domath.RandInt(1, 3)) * time.Second)
-			goto LabelNewFile
+			goto LabelNewFileFlv
 		}
 
 		return err
@@ -98,11 +98,13 @@ LabelNewFile:
 		}
 	}
 
+LabelNewFileM3u8:
 	// 设置流的信息
 	stream.GetStream().Reset(title, info.StreamUrl, headers, path, fileSizeThreshold, handler)
 
 	// 开始录制直播流
 	logger.Info.Printf("😙开始录制直播间【%s】(%+v)\n", info.Name, anchor)
+
 	err = stream.Start()
 	if err != nil {
 		return err
@@ -122,7 +124,13 @@ LabelNewFile:
 	restart := <-stream.GetStream().ChRestart
 	if restart {
 		isNewFile = true
-		goto LabelNewFile
+		if _, ok := stream.(*flv.Stream); ok {
+			goto LabelNewFileFlv
+		} else if _, ok = stream.(*m3u8.Stream); ok {
+			goto LabelNewFileM3u8
+		} else {
+			return fmt.Errorf("未知的 Stream")
+		}
 	}
 
 	// 已下播，结束录制
@@ -130,28 +138,6 @@ LabelNewFile:
 	capturing.Delete(key)
 
 	return nil
-}
-
-// StartFlvAnchor 开始录制 flv 直播流
-//
-// 参数为 正在录制表、主播信息、临时文件存储路径（不需担心重名）、单视频大小、视频处理器
-func StartFlvAnchor(capturing *sync.Map, anchor entity.Anchor, path string, fileSizeThreshold int64,
-	handler hanlders.IHandler) error {
-	s := &flv.Stream{Stream: &streamentity.Stream{}}
-
-	return StartAnchor(capturing, s, anchor, path, fileSizeThreshold, handler)
-}
-
-// StartM3u8Anchor 开始录制 m3u8 直播流
-//
-// 参数为 正在录制表、主播信息、临时文件存储路径（不需担心重名）、单视频大小、视频处理器
-//
-// 下载m3u8视频（非直播）时，可下载到单个文件中，不能分文件保存，因为会重读m3u8文件，也就会重头开始下载
-func StartM3u8Anchor(capturing *sync.Map, anchor entity.Anchor, path string, fileSizeThreshold int64,
-	handler hanlders.IHandler) error {
-	s := &m3u8.Stream{Stream: &streamentity.Stream{}}
-
-	return StartAnchor(capturing, s, anchor, path, fileSizeThreshold, handler)
 }
 
 // GenCapturingKey 正在录制的主播的键，避免重复录制，格式如 "<平台>_<主播ID>"，如 "bili_12345"

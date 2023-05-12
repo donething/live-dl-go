@@ -41,6 +41,10 @@ func (s *Stream) Start() error {
 	return nil
 }
 
+func (s *Stream) GetStream() *entity.Stream {
+	return s.Stream
+}
+
 // Download 下载直播流、直链
 func Download(title, streamUrl string, headers map[string]string,
 	path string, handler hanlders.IHandler) error {
@@ -56,8 +60,4 @@ func Download(title, streamUrl string, headers map[string]string,
 	}
 
 	return nil
-}
-
-func (s *Stream) GetStream() *entity.Stream {
-	return s.Stream
 }
