@@ -5,7 +5,14 @@ import (
 	"github.com/donething/live-dl-go/comm"
 	"github.com/donething/live-dl-go/hanlders"
 	"io"
+	"sync"
 )
+
+// BytesType 已写入的字节数
+type BytesType struct {
+	bytes int64
+	mu    sync.Mutex
+}
 
 // Stream 视频流
 type Stream struct {
@@ -26,6 +33,9 @@ type Stream struct {
 
 	// 文件处理器
 	Handler hanlders.IHandler
+
+	// 	已写入当前视频文件/文件夹的字节数，用于保证单个文件不超过指定的大小
+	CurBytes BytesType
 }
 
 // CreateReader 创建输入流
@@ -40,4 +50,25 @@ func (s *Stream) CreateReader() (io.ReadCloser, error) {
 	}
 
 	return resp.Body, nil
+}
+
+func (b *BytesType) GetBytes() int64 {
+	var n int64
+	b.mu.Lock()
+	n = b.bytes
+	b.mu.Unlock()
+
+	return n
+}
+
+func (b *BytesType) AddBytes(n int64) {
+	b.mu.Lock()
+	b.bytes += n
+	b.mu.Unlock()
+}
+
+func (b *BytesType) ResetBytes() {
+	b.mu.Lock()
+	b.bytes = 0
+	b.mu.Unlock()
 }

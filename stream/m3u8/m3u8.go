@@ -43,8 +43,6 @@ func (s *Stream) GetStream() *entity.Stream {
 func (s *Stream) Capture() error {
 	// 避免重复 URL
 	urlsHistory := NewUrlsHistory(MaxUrlsHistory)
-	// 在当前文件夹下已写入的视频的总字节数，最终合并这这文件夹下的视频片段，保证单个文件的最大字节数不超过指定的大小
-	var total int64 = 0
 	// 临时文件的基目录
 	baseDir := filepath.Dir(s.Path)
 	// 当前写入的文件夹
@@ -116,12 +114,12 @@ func (s *Stream) Capture() error {
 			resp.Body.Close()
 			file.Close()
 
-			total += n
+			s.CurBytes.AddBytes(n)
 		}
 
 		// 在当前文件夹写入的数据已达到限制的大小，将视频保存到新文件夹中
 		// 为了减少调用`os.MkdirAll`，放在循环下载切片的父层的此处
-		if s.FileSizeThreshold != 0 && total >= s.FileSizeThreshold {
+		if s.FileSizeThreshold != 0 && s.CurBytes.GetBytes() >= s.FileSizeThreshold {
 			// 合并、发送该文件夹中的视频片段
 			err = concatAndSend(filepath.Join(baseDir, folder), s)
 			if err != nil {
@@ -131,7 +129,7 @@ func (s *Stream) Capture() error {
 			// 新的视频片段文件夹
 			folder = fmt.Sprintf("%d", time.Now().UnixMilli())
 			// 注意：清除当前文件夹的数据记录，以便重新计算下一个文件夹的数据
-			total = 0
+			s.CurBytes.ResetBytes()
 		}
 
 		// time.Sleep(time.Duration(domath.RandInt(3, 6)))

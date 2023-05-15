@@ -28,8 +28,6 @@ type ThresholdFile struct {
 	uniPath string
 	// 当前写入的文件
 	file *os.File
-	// 当前文件已写入的字节数
-	bytes int64
 }
 
 // NewThresholdFile 创建实例
@@ -105,10 +103,10 @@ func (f *ThresholdFile) Write(bs []byte) (int, error) {
 	if err != nil {
 		return 0, fmt.Errorf("写入视频文件出错：%w", err)
 	}
-	f.bytes += int64(n)
+	f.stream.CurBytes.AddBytes(int64(n))
 
 	// 判断是否需要更换新文件保存
-	if f.threshold != 0 && f.bytes >= f.threshold {
+	if f.threshold != 0 && f.stream.CurBytes.GetBytes() >= f.threshold {
 		// 先关闭当前文件
 		f.file.Close()
 
@@ -122,7 +120,7 @@ func (f *ThresholdFile) Write(bs []byte) (int, error) {
 		// 最后清空该视频文件的信息，以便新创建
 		f.file = nil
 		f.uniPath = ""
-		f.bytes = 0
+		f.stream.CurBytes.ResetBytes()
 
 		// 换新文件存储时，可能要重新创建数据输入流
 		if f.needRecreate {
