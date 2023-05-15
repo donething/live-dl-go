@@ -17,24 +17,14 @@ var (
 	title = dotg.EscapeMk(fmt.Sprintf("#测试 文件标题 %d", time.Now().UnixMilli()))
 )
 
-func TestStream_StartM3u8(t *testing.T) {
-	u := "http://bjlive.szsbtech.com/record/dXqwcrKjKA4upV2.m3u8?auth_key=1681871804-0-0-72d1b56b2d5fcc20a4607970a0b46769"
-	p := "D:/Tmp/live/zuji.ts"
-	s := NewStream(title, u, nil, p, 10*1024*1024, &tgHandler)
-
-	err := s.Start()
+func TestStream_Capture(t *testing.T) {
+	s := NewStream("足迹15722883",
+		"http://bjlive.szsbtech.com/record/Nx8t2oAALlhNjN.m3u8?auth_key=1684146012-0-0-16b677731be5aed037a429763c8ea515",
+		nil,
+		"D:/Tmp/live/zuji_15722883.ts",
+		5*1024*1024, &tgHandler)
+	err := s.Capture()
 	if err != nil {
 		t.Fatal(err)
-	}
-
-	err = <-s.GetStream().ChErr
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	restart := <-s.GetStream().ChRestart
-	t.Logf("重新下载直播流：%v", restart)
-	if restart {
-		TestStream_StartM3u8(t)
 	}
 }

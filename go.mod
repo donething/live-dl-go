@@ -2,7 +2,7 @@ module github.com/donething/live-dl-go
 
 go 1.20
 
-require github.com/donething/utils-go v0.0.30-0.20230422121828-a8e4e983c0c1
+require github.com/donething/utils-go v0.0.30-0.20230515115153-3b3178119e6b
 
 require (
 	github.com/saintfish/chardet v0.0.0-20120816061221-3af4cd4741ca // indirect

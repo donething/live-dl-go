@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/donething/live-dl-go/hanlders"
 	"github.com/donething/live-dl-go/stream/entity"
+	"github.com/donething/live-dl-go/stream/files"
 )
 
 // Stream flv 直播流
@@ -19,44 +20,30 @@ func NewStream(title, streamUrl string, headers map[string]string, path string,
 			Title:             title,
 			StreamUrl:         streamUrl,
 			Headers:           headers,
-			ChSegUrl:          make(chan string),
 			Path:              path,
 			FileSizeThreshold: fileSizeThreshold,
 			Handler:           handler,
-			ChErr:             make(chan error),
-			ChRestart:         make(chan bool),
 		},
 	}
-}
-
-// Start 下载 flv 直播流
-func (s *Stream) Start() error {
-	err := s.PrepareCapture()
-	if err != nil {
-		return fmt.Errorf("准备录制flv流时出错：%w", err)
-	}
-
-	s.ChSegUrl <- s.StreamUrl
-	close(s.ChSegUrl)
-	return nil
 }
 
 func (s *Stream) GetStream() *entity.Stream {
 	return s.Stream
 }
 
-// Download 下载直播流、直链
-func Download(title, streamUrl string, headers map[string]string,
-	path string, handler hanlders.IHandler) error {
-	s := NewStream(title, streamUrl, headers, path, 0, handler)
-	err := s.Start()
+// Capture 录制 Flv 视频流
+func (s *Stream) Capture() error {
+	reader, err := s.CreateReader()
 	if err != nil {
-		return err
+		return fmt.Errorf("创建 Flv 视频输入流出错：%w", err)
 	}
 
-	err = <-s.GetStream().ChErr
+	// 写入文件
+	tFile := files.NewThresholdFile(reader, true, s.Path, s.FileSizeThreshold, s.Stream)
+
+	err = tFile.StartSave()
 	if err != nil {
-		return err
+		return fmt.Errorf("将 Flv 写入可限制大小的视频文件出错：%w", err)
 	}
 
 	return nil

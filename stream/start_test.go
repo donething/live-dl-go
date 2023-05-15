@@ -47,3 +47,16 @@ func TestStartAnchorM3u8(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestStartAnchorZuji(t *testing.T) {
+	anchor := entity.Anchor{
+		ID:   "20221998",
+		Plat: zuji.Plat,
+	}
+
+	err := StartAnchor(capturing, nil, anchor, "D:/Tmp/live/zuji_20221998.ts",
+		10*1024*1024, &localHandle)
+	if err != nil {
+		t.Fatal(err)
+	}
+}

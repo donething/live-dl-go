@@ -1,6 +1,6 @@
 package m3u8
 
-const MaxUrlsHistory = 5
+const MaxUrlsHistory = 10
 
 // UrlsHistory 避免发送重复切片的 URL 下载
 //

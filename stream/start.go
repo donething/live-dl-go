@@ -28,10 +28,6 @@ const (
 // 当 stream 为 nil 时，将根据直播流地址自动生成
 func StartAnchor(capturing *sync.Map, stream streamentity.IStream, anchor entity.Anchor, path string,
 	fileSizeThreshold int64, handler hanlders.IHandler) error {
-	// 此次是否是换新文件保存视频
-	// 用于当正在录播且isNewFile为真时，不退出（仅当定时获取主播状态决定是否录制时触发）
-	var isNewFile = false
-
 	// 开始录制该主播的时间
 	start := dotext.FormatDate(time.Now(), "20060102")
 
@@ -44,7 +40,7 @@ func StartAnchor(capturing *sync.Map, stream streamentity.IStream, anchor entity
 	}
 
 	// 	换新文件保存视频，需要重新读取直播流的地址，以防旧的地址失效
-LabelNewFileFlv:
+LabelRetry:
 	info, err := anchorSite.GetAnchorInfo()
 	if err != nil {
 		fail++
@@ -53,7 +49,7 @@ LabelNewFileFlv:
 		if fail <= maxFail {
 			logger.Warn.Printf("重试获取主播的信息(%+v)\n", anchor)
 			time.Sleep(time.Duration(domath.RandInt(1, 3)) * time.Second)
-			goto LabelNewFileFlv
+			goto LabelRetry
 		}
 
 		return err
@@ -70,13 +66,8 @@ LabelNewFileFlv:
 
 	// 判断此次是否需要录制视频
 	// 存在表示正在录制且此次不用换新文件存储，不重复录制，返回
-	if s, exists := capturing.Load(key); exists && !isNewFile {
-		var bytes = ""
-		if ss, ok := s.(streamentity.IStream); ok {
-			bytes = dotext.BytesHumanReadable(uint64(ss.GetStream().GetBytes()))
-		}
-		logger.Info.Printf("😊【%s】正在录制(%+v)…本次已读取 %s/%s\n", info.Name, anchor, bytes,
-			dotext.BytesHumanReadable(uint64(fileSizeThreshold)))
+	if _, exists := capturing.Load(key); exists {
+		logger.Info.Printf("😊【%s】正在录制(%+v)……\n", info.Name, anchor)
 		return nil
 	}
 
@@ -90,51 +81,28 @@ LabelNewFileFlv:
 	// 如果没有指定直播流的类型，就自动匹配
 	if stream == nil {
 		if strings.Contains(strings.ToLower(info.StreamUrl), ".flv") {
-			stream = &flv.Stream{Stream: &streamentity.Stream{}}
+			stream = flv.NewStream(title, info.StreamUrl, headers, path, fileSizeThreshold, handler)
 		} else if strings.Contains(strings.ToLower(info.StreamUrl), ".m3u8") {
-			stream = &m3u8.Stream{Stream: &streamentity.Stream{}}
+			stream = m3u8.NewStream(title, info.StreamUrl, headers, path, fileSizeThreshold, handler)
 		} else {
 			return fmt.Errorf("没有匹配到直播流的类型：%s", info.StreamUrl)
 		}
 	}
 
-LabelNewFileM3u8:
-	// 设置流的信息
-	stream.GetStream().Reset(title, info.StreamUrl, headers, path, fileSizeThreshold, handler)
-
 	// 开始录制直播流
-	logger.Info.Printf("😙开始录制直播间【%s】(%+v)\n", info.Name, anchor)
-
-	err = stream.Start()
-	if err != nil {
-		return err
-	}
+	logger.Info.Printf("😙【%s】开始录制直播(%+v)\n", info.Name, anchor)
 
 	// 记录正在录制的标识
 	capturing.Store(key, stream)
 
-	// 等待下载阶段的错误
-	err = <-stream.GetStream().ChErr
+	err = stream.Capture()
 	if err != nil {
 		capturing.Delete(key)
 		return err
 	}
 
-	// 需要用新的文件存储视频
-	restart := <-stream.GetStream().ChRestart
-	if restart {
-		isNewFile = true
-		if _, ok := stream.(*flv.Stream); ok {
-			goto LabelNewFileFlv
-		} else if _, ok = stream.(*m3u8.Stream); ok {
-			goto LabelNewFileM3u8
-		} else {
-			return fmt.Errorf("未知的 Stream")
-		}
-	}
-
 	// 已下播，结束录制
-	logger.Info.Printf("😶直播间已中断直播【%s】(%+v)，停止录制\n", info.Name, anchor)
+	logger.Info.Printf("😶【%s】已中断直播(%+v)，停止录制\n", info.Name, anchor)
 	capturing.Delete(key)
 
 	return nil

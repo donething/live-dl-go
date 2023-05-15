@@ -13,13 +13,13 @@ type IHandler interface {
 type InfoHandle struct {
 	// 文件路径
 	Path string
-	// 标题。注意作为TG的caption时，需要转义
+	// 标题。注意作为 TG 的 caption 时，需要转义
 	Title string
 	// 文件处理器。在 handler worker 中将调用，来处理文件
 	Handler IHandler
 	// 上传到TG时的分段大小，为 0 不分段
 	FileSizeThreshold int64
-	// 	上传成功是否保留源文件
+	// 	上传成功是否保留源文件。TG Handler 可设置
 	Reserve bool
 }
 
