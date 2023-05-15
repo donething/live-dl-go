@@ -49,6 +49,8 @@ func (s *Stream) Capture() error {
 	baseDir := filepath.Dir(s.Path)
 	// 当前写入的文件夹
 	folder := fmt.Sprintf("%d", time.Now().UnixMilli())
+	// 偶尔获取 m3u8 文件会失败，尝试重试
+	retry := 0
 
 	// 最后合并、发送该文件夹中的视频片段
 	defer func() {
@@ -68,6 +70,12 @@ func (s *Stream) Capture() error {
 		m := m3u8decoder.New()
 		err := m.Decode(s.StreamUrl, s.Headers)
 		if err != nil {
+			// 获取失败时可以重试2次
+			if retry < 2 {
+				retry++
+				time.Sleep(1 * time.Second)
+				continue
+			}
 			return fmt.Errorf("解码 m3u8 文件出错：%w", err)
 		}
 
