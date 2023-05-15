@@ -155,7 +155,7 @@ func concatAndSend(dir string, s *Stream) error {
 
 	// 再处理当前合并的视频文件
 	hanlders.ChHandle <- &hanlders.InfoHandle{
-		Path:    path,
+		Path:    newPath,
 		Title:   s.Title,
 		Handler: s.Handler,
 	}
