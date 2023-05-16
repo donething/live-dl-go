@@ -14,6 +14,12 @@ type BytesType struct {
 	mu    sync.Mutex
 }
 
+// StopType 停止录制视频流
+type StopType struct {
+	stop bool
+	mu   sync.Mutex
+}
+
 // Stream 视频流
 type Stream struct {
 	// 标题。注意作为 TG 的 caption 时，需要转义
@@ -36,6 +42,9 @@ type Stream struct {
 
 	// 	已写入当前视频文件/文件夹的字节数，用于保证单个文件不超过指定的大小
 	CurBytes BytesType
+
+	// 停止录制视频流
+	Stop StopType
 }
 
 // CreateReader 创建输入流
@@ -52,8 +61,10 @@ func (s *Stream) CreateReader() (io.ReadCloser, error) {
 	return resp.Body, nil
 }
 
+// GetBytes 获取当前视频文件中已写入的字节数
 func (b *BytesType) GetBytes() int64 {
 	var n int64
+
 	b.mu.Lock()
 	n = b.bytes
 	b.mu.Unlock()
@@ -71,4 +82,21 @@ func (b *BytesType) ResetBytes() {
 	b.mu.Lock()
 	b.bytes = 0
 	b.mu.Unlock()
+}
+
+// SetStop 设置停止录制视频流
+func (p *StopType) SetStop() {
+	p.mu.Lock()
+	p.stop = true
+	p.mu.Unlock()
+}
+
+func (p *StopType) GetStop() bool {
+	var stop bool
+
+	p.mu.Lock()
+	stop = p.stop
+	p.mu.Unlock()
+
+	return stop
 }

@@ -64,6 +64,11 @@ func (s *Stream) Capture() error {
 	}()
 
 	for {
+		// 是否停止录制视频流。放在此层 for，避免频繁判断
+		if s.Stop.GetStop() {
+			return nil
+		}
+
 		// 解码 m3u8 视频列表
 		m := m3u8decoder.New()
 		err := m.Decode(s.StreamUrl, s.Headers)

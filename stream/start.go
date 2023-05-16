@@ -9,7 +9,6 @@ import (
 	streamentity "github.com/donething/live-dl-go/stream/entity"
 	"github.com/donething/live-dl-go/stream/flv"
 	"github.com/donething/live-dl-go/stream/m3u8"
-	"github.com/donething/utils-go/domath"
 	"github.com/donething/utils-go/dotext"
 	"strings"
 	"sync"
@@ -17,8 +16,8 @@ import (
 )
 
 const (
-	// 获取主播信息失败的的最大次数
-	maxFail = 3
+	// 获取主播信息失败后，重试的次数
+	maxRetry = 3
 )
 
 // StartAnchor 开始录制直播流
@@ -31,27 +30,14 @@ func StartAnchor(capturing *sync.Map, stream streamentity.IStream, anchor entity
 	// 开始录制该主播的时间
 	start := dotext.FormatDate(time.Now(), "20060102")
 
-	// 获取主播信息失败的次数
-	fail := 0
-
 	anchorSite, err := plats.GenAnchor(&anchor)
 	if err != nil {
 		return err
 	}
 
-	// 	换新文件保存视频，需要重新读取直播流的地址，以防旧的地址失效
-LabelRetry:
-	info, err := anchorSite.GetAnchorInfo()
+	// 	获取主播信息
+	info, err := tryGetAnchorInfo(anchorSite, maxRetry)
 	if err != nil {
-		fail++
-
-		// 重试
-		if fail <= maxFail {
-			logger.Warn.Printf("重试获取主播的信息(%+v)\n", anchor)
-			time.Sleep(time.Duration(domath.RandInt(1, 3)) * time.Second)
-			goto LabelRetry
-		}
-
 		return err
 	}
 
@@ -102,9 +88,16 @@ LabelRetry:
 	capturing.Store(key, stream)
 
 	err = stream.Capture()
+	// 当录制出错时，要判断出错情况：在获取直播流出错时，先判断主播此时是否在播，主播且出错才是真正的录制错误
 	if err != nil {
-		capturing.Delete(key)
-		return err
+		infoCheck, err := tryGetAnchorInfo(anchorSite, maxRetry)
+		if err != nil {
+			return err
+		}
+
+		if infoCheck.IsLive {
+			return err
+		}
 	}
 
 	// 已下播，结束录制
@@ -117,4 +110,28 @@ LabelRetry:
 // GenCapturingKey 正在录制的主播的键，避免重复录制，格式如 "<平台>_<主播ID>"，如 "bili_12345"
 func GenCapturingKey(anchor *entity.Anchor) string {
 	return fmt.Sprintf("%s_%s", anchor.Plat, anchor.ID)
+}
+
+// 获取主播信息，可指定失败后的重试次数
+func tryGetAnchorInfo(anchorSite entity.IAnchor, retry int) (*entity.AnchorInfo, error) {
+	fail := 0
+	var info *entity.AnchorInfo
+	var err error
+
+	for {
+		info, err = anchorSite.GetAnchorInfo()
+		if err != nil {
+			// 重试
+			if fail < retry {
+				fail++
+				time.Sleep(1 * time.Second)
+				continue
+			}
+
+			return nil, err
+		}
+
+		// 获取成功
+		return info, nil
+	}
 }

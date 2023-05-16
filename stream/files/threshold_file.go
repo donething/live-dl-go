@@ -64,6 +64,11 @@ func (f *ThresholdFile) StartSave() error {
 	var buf = make([]byte, 32*1024)
 
 	for {
+		// 是否停止录制视频流
+		if f.stream.Stop.GetStop() {
+			return nil
+		}
+
 		n, err := f.reader.Read(buf)
 		// 读取出错
 		if n < 0 {
