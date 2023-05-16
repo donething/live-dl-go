@@ -54,6 +54,12 @@ func StartAnchor(capturing *capture_status.Capture[streamentity.IStream],
 		return nil
 	}
 
+	// 直播间设置了权限
+	if info.Denied {
+		logger.Info.Printf("😂【%s】直播间设置了权限，无法直接观看(%+v)\n", info.Name, anchor)
+		return nil
+	}
+
 	// 判断此次是否需要录制视频
 	// 存在表示正在录制且此次不用换新文件存储，不重复录制，返回
 	if s, exists := capturing.Get(key); exists {
