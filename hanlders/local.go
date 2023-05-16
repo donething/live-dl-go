@@ -12,7 +12,7 @@ import (
 type LocalHanlder struct{}
 
 func (l *LocalHanlder) Handle(info *InfoHandle) error {
-	name := fmt.Sprintf("%s_%d%s", info.Title, time.Now().UnixMilli(), filepath.Ext(info.Path))
+	name := fmt.Sprintf("%s_%d%s", info.Title, time.Now().Unix(), filepath.Ext(info.Path))
 	name = dofile.ValidFileName(name, "_")
 
 	dst := filepath.Join(filepath.Dir(info.Path), name)

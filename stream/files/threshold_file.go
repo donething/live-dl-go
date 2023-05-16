@@ -95,7 +95,7 @@ func (f *ThresholdFile) Write(bs []byte) (int, error) {
 	if f.file == nil {
 		// 打开写入的文件
 		f.uniPath = filepath.Join(filepath.Dir(f.path),
-			fmt.Sprintf("%d_%s", time.Now().UnixMilli(), filepath.Base(f.path)))
+			fmt.Sprintf("%d_%s", time.Now().Unix(), filepath.Base(f.path)))
 		file, err := os.Create(f.uniPath)
 		if err != nil {
 			return 0, fmt.Errorf("创建视频文件出错：%w", err)

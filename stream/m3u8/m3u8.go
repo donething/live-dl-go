@@ -12,6 +12,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -46,7 +47,7 @@ func (s *Stream) Capture() error {
 	// 临时文件的基目录
 	baseDir := filepath.Dir(s.Path)
 	// 当前写入的文件夹
-	folder := fmt.Sprintf("%d", time.Now().UnixMilli())
+	folder := genFolderName(s.Path)
 	// 偶尔获取 m3u8 文件会失败，尝试重试
 	retry := 0
 
@@ -132,7 +133,7 @@ func (s *Stream) Capture() error {
 			}
 
 			// 新的视频片段文件夹
-			folder = fmt.Sprintf("%d", time.Now().UnixMilli())
+			folder = genFolderName(s.Path)
 			// 注意：清除当前文件夹的数据记录，以便重新计算下一个文件夹的数据
 			s.CurBytes.ResetBytes()
 		}
@@ -151,9 +152,8 @@ func concatAndSend(dir string, s *Stream) error {
 		return fmt.Errorf("合并视频(%s)出错：\n%w", path, err)
 	}
 
-	// 将合并后的视频文件，复制到父级目录中，以便删除该临时目录 dir
-	newPath := filepath.Join(filepath.Dir(dir), filepath.Base(path))
-	err = os.Rename(path, newPath)
+	// 将合并后的视频文件，复制到父级目录中，并删除该临时目录 dir
+	err = os.Rename(path, s.Path)
 	if err != nil {
 		return fmt.Errorf("合并视频时，移动合并后的视频文件出错：%w", err)
 	}
@@ -166,10 +166,17 @@ func concatAndSend(dir string, s *Stream) error {
 
 	// 再处理当前合并的视频文件
 	hanlders.ChHandle <- &hanlders.InfoHandle{
-		Path:    newPath,
+		Path:    s.Path,
 		Title:   s.Title,
 		Handler: s.Handler,
 	}
 
 	return nil
+}
+
+// 生成录制当前视频流的工作文件夹
+func genFolderName(path string) string {
+	name := strings.TrimSuffix(filepath.Base(path), filepath.Ext(path))
+
+	return fmt.Sprintf("%s_%d", name, time.Now().Unix())
 }

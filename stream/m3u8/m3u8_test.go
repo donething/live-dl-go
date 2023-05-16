@@ -14,7 +14,7 @@ var (
 		TG:     dotg.NewTGBot(os.Getenv("MY_TG_TOKEN")),
 		ChatID: os.Getenv("MY_TG_CHAT_LIVE"),
 	}
-	title = dotg.EscapeMk(fmt.Sprintf("#测试 文件标题 %d", time.Now().UnixMilli()))
+	title = dotg.EscapeMk(fmt.Sprintf("#测试 文件标题 %d", time.Now().Unix()))
 )
 
 func TestStream_Capture(t *testing.T) {
