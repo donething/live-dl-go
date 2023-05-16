@@ -1,4 +1,4 @@
-package capture_status
+package stream
 
 import (
 	"fmt"
@@ -6,28 +6,28 @@ import (
 	"sync"
 )
 
-// Capture 正在录制的主播的状态
-type Capture[T any] struct {
+// CapStatus 正在录制的主播的状态
+type CapStatus[T any] struct {
 	cap map[string]T
 	mu  sync.Mutex
 }
 
-// New 生成 Capture 的实例
-func New[T any]() *Capture[T] {
-	return &Capture[T]{
+// New 生成 CapStatus 的实例
+func New[T any]() *CapStatus[T] {
+	return &CapStatus[T]{
 		cap: make(map[string]T),
 	}
 }
 
 // Set 设置
-func (c *Capture[T]) Set(k string, v T) {
+func (c *CapStatus[T]) Set(k string, v T) {
 	c.mu.Lock()
 	c.cap[k] = v
 	c.mu.Unlock()
 }
 
 // Get 读取
-func (c *Capture[T]) Get(k string) (T, bool) {
+func (c *CapStatus[T]) Get(k string) (T, bool) {
 	var v T
 	var ok bool
 
@@ -39,7 +39,7 @@ func (c *Capture[T]) Get(k string) (T, bool) {
 }
 
 // Del 删除
-func (c *Capture[T]) Del(k string) {
+func (c *CapStatus[T]) Del(k string) {
 	c.mu.Lock()
 	delete(c.cap, k)
 	c.mu.Unlock()

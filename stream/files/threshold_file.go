@@ -2,6 +2,7 @@ package files
 
 import (
 	"fmt"
+	"github.com/donething/live-dl-go/comm/logger"
 	"github.com/donething/live-dl-go/hanlders"
 	"github.com/donething/live-dl-go/stream/entity"
 	"github.com/donething/utils-go/dofile"
@@ -62,10 +63,14 @@ func (f *ThresholdFile) StartSave() error {
 	var buf = make([]byte, 32*1024)
 
 	for {
+		logger.Info.Printf("-- 检查是否停止\n")
+
 		// 是否停止录制视频流
 		if f.stream.Stop.GetStop() {
 			return nil
 		}
+
+		logger.Info.Printf("-- 开始读取\n")
 
 		n, err := f.reader.Read(buf)
 		// 读取出错
@@ -92,12 +97,16 @@ func (f *ThresholdFile) Write(bs []byte) (int, error) {
 	// 初始化文件
 	if f.file == nil {
 		// 打开写入的文件
+		logger.Info.Printf("-- 创建文件\n")
+
 		f.uniPath = dofile.UniquePath(f.path)
 		file, err := os.Create(f.uniPath)
 		if err != nil {
 			return 0, fmt.Errorf("创建视频文件出错：%w", err)
 		}
 		f.file = file
+		logger.Info.Printf("-- 创建文件结束\n")
+
 	}
 
 	// 写入
@@ -127,7 +136,10 @@ func (f *ThresholdFile) Write(bs []byte) (int, error) {
 		// 换新文件存储时，可能要重新创建数据输入流
 		if f.needRecreate {
 			f.reader.Close()
+			logger.Info.Printf("-- 获取 Reader\n")
 			reader, err := f.stream.CreateReader()
+			logger.Info.Printf("-- 获取 Reader结束, err: %+v\n", nil)
+
 			if err != nil {
 				return 0, fmt.Errorf("重新创建数据输入流出错：%w", err)
 			}
