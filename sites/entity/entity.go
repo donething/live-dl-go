@@ -27,6 +27,9 @@ type AnchorInfo struct {
 	IsCycle bool `json:"isCycle"`
 	// 直播流的地址
 	StreamUrl string `json:"streamUrl"`
+
+	// 是否设置了权限，无法观看
+	Denied bool `json:"hasPermission"`
 }
 
 // GenAnchorInfoWhenErr 当 GetAnchorInfo() 获取主播信息出错时，避免返回 nil，而是快速生成实例

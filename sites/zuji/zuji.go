@@ -91,6 +91,7 @@ func (a *AnchorZuji) GetAnchorInfo() (*entity.AnchorInfo, error) {
 		WebUrl: fmt.Sprintf("http://share-g3g5zb3o.i.%s/r/%s", host, a.ID),
 		Title:  info.Title,
 		IsLive: info.Roomstatus == 1,
+		Denied: info.Permission != 0,
 	}
 
 	// 如果主播不在播，就不用获取直播流地址了，直接返回已获取的信息

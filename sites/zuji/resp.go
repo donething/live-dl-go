@@ -13,11 +13,11 @@ type RespInterface struct {
 		Roomstatus int `json:"roomstatus"`
 		// 临时直播间号。用于获取直播流地址
 		Vid string `json:"vid"`
-		// 直播间标题
+		// 直播间标题。未开播时为空""
 		Title string `json:"title"`
-		// 用户显示的 ID。如短号、靓号
+		// 用户显示的 ID。如短号、靓号，可用于获取直播信息
 		Name string `json:"name"`
-		// 用户真实 ID
+		// 用户真实 ID。作用未知
 		Uid int `json:"uid"`
 		// 用户昵称
 		Nickname string `json:"nickname"`
