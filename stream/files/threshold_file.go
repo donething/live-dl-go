@@ -7,9 +7,6 @@ import (
 	"github.com/donething/utils-go/dofile"
 	"io"
 	"os"
-	"path/filepath"
-	"strings"
-	"time"
 )
 
 // ThresholdFile 可限制文件大小的文件写入器
@@ -95,9 +92,7 @@ func (f *ThresholdFile) Write(bs []byte) (int, error) {
 	// 初始化文件
 	if f.file == nil {
 		// 打开写入的文件
-		name := strings.TrimSuffix(filepath.Base(f.path), filepath.Ext(f.path))
-		f.uniPath = filepath.Join(filepath.Dir(f.path),
-			fmt.Sprintf("%s_%d%s", name, time.Now().Unix(), filepath.Ext(f.path)))
+		f.uniPath = dofile.UniquePath(f.path)
 		file, err := os.Create(f.uniPath)
 		if err != nil {
 			return 0, fmt.Errorf("创建视频文件出错：%w", err)

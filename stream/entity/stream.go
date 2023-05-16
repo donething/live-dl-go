@@ -31,7 +31,7 @@ type Stream struct {
 	// 请求头
 	Headers map[string]string
 
-	// 视频文件的保存路径
+	// 视频文件的保存路径。flv 流的后缀为".flv"，m3u8 流的后缀为".mp4"
 	Path string
 
 	// 文件的最大字节数，为 0 表示无限制。上传 TG 建议设为 1.8GB: 1800*1024*1024

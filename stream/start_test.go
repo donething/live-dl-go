@@ -29,7 +29,7 @@ func TestStartAnchorFlv(t *testing.T) {
 		Plat: douyin.Plat,
 	}
 
-	err := StartAnchor(capturing, nil, anchor, "D:/Tmp/live/douyin_249406961231.flv",
+	err := StartAnchor(capturing, nil, anchor, "D:/Tmp/live/",
 		10*1024*1024, &tgHandler)
 	if err != nil {
 		t.Fatal(err)
@@ -42,7 +42,7 @@ func TestStartAnchorM3u8(t *testing.T) {
 		Plat: zuji.Plat,
 	}
 
-	err := StartAnchor(capturing, nil, anchor, "D:/Tmp/live/zuji_15722883.ts",
+	err := StartAnchor(capturing, nil, anchor, "D:/Tmp/live/",
 		5*1024*1024, &tgHandler)
 	if err != nil {
 		t.Fatal(err)
@@ -55,7 +55,7 @@ func TestStartAnchorZuji(t *testing.T) {
 		Plat: zuji.Plat,
 	}
 
-	err := StartAnchor(capturing, nil, anchor, "D:/Tmp/live/zuji_20221998.ts",
+	err := StartAnchor(capturing, nil, anchor, "D:/Tmp/live/",
 		10*1024*1024, &localHandle)
 	if err != nil {
 		t.Fatal(err)

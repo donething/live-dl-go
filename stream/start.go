@@ -11,6 +11,7 @@ import (
 	"github.com/donething/live-dl-go/stream/flv"
 	"github.com/donething/live-dl-go/stream/m3u8"
 	"github.com/donething/utils-go/dotext"
+	"path/filepath"
 	"strings"
 	"time"
 )
@@ -22,14 +23,14 @@ const (
 
 // StartAnchor 开始录制直播流
 //
-// 参数为：正在录制表、直播流（Flv、M3u8）、主播信息、临时文件存储路径、单视频大小、视频处理器
+// 参数为：正在录制表、直播流（Flv、M3u8）、主播信息、临时工作路径、单视频大小、视频处理器
 //
 // 录制表 capturing 通过传递，方便在调用处获取录制状态
 //
 // 当 stream 为 nil 时，将根据直播流地址自动生成
 func StartAnchor(capturing *capture_status.Capture[streamentity.IStream],
 	stream streamentity.IStream,
-	anchor entity.Anchor, path string, fileSizeThreshold int64, handler hanlders.IHandler) error {
+	anchor entity.Anchor, workdir string, fileSizeThreshold int64, handler hanlders.IHandler) error {
 	// 开始录制该主播的时间
 	start := dotext.FormatDate(time.Now(), "20060102")
 
@@ -71,9 +72,14 @@ func StartAnchor(capturing *capture_status.Capture[streamentity.IStream],
 
 	// 如果没有指定直播流的类型，就自动匹配
 	if stream == nil {
+		name := fmt.Sprintf("%s_%s", anchor.Plat, anchor.ID)
 		if strings.Contains(strings.ToLower(info.StreamUrl), ".flv") {
+			// 保存依然为 flv，只是发送到 TG 前转为 mp4
+			path := filepath.Join(workdir, name+".flv")
 			stream = flv.NewStream(title, info.StreamUrl, headers, path, fileSizeThreshold, handler)
 		} else if strings.Contains(strings.ToLower(info.StreamUrl), ".m3u8") {
+			// m3u8 合并片段时就转为 mp4
+			path := filepath.Join(workdir, name+".mp4")
 			stream = m3u8.NewStream(title, info.StreamUrl, headers, path, fileSizeThreshold, handler)
 		} else {
 			return fmt.Errorf("没有匹配到直播流的类型：%s", info.StreamUrl)

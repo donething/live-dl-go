@@ -13,6 +13,8 @@ type Stream struct {
 }
 
 // NewStream 创建 Stream 的实例
+//
+// 参数 path 视频的保存路径，以 ".flv" 结尾
 func NewStream(title, streamUrl string, headers map[string]string, path string,
 	fileSizeThreshold int64, handler hanlders.IHandler) entity.IStream {
 	return &Stream{

@@ -22,6 +22,8 @@ type Stream struct {
 }
 
 // NewStream 创建 Stream 的实例
+//
+// 参数 path 视频的保存路径，以 ".mp4" 结尾
 func NewStream(title, streamUrl string, headers map[string]string, path string,
 	fileSizeThreshold int64, handler hanlders.IHandler) entity.IStream {
 	return &Stream{
@@ -147,26 +149,21 @@ func (s *Stream) Capture() error {
 // 合并、发送视频
 func concatAndSend(dir string, s *Stream) error {
 	// 合并视频
-	path, err := dovideo.Concat(dir, ".ts", ".mp4")
+	unique := dofile.UniquePath(s.Path)
+	err := dovideo.Concat(dir, ".ts", unique)
 	if err != nil {
-		return fmt.Errorf("合并视频(%s)出错：\n%w", path, err)
-	}
-
-	// 将合并后的视频文件，复制到父级目录中，并删除该临时目录 dir
-	err = os.Rename(path, s.Path)
-	if err != nil {
-		return fmt.Errorf("合并视频时，移动合并后的视频文件出错：%w", err)
+		return fmt.Errorf("合并目录中的视频出错(%s)：\n%w", dir, err)
 	}
 
 	// 删除临时目录
 	err = os.RemoveAll(dir)
 	if err != nil {
-		return fmt.Errorf("合并视频时，删除临时目录出错：%w", err)
+		return fmt.Errorf("合并视频时，删除临时目录出错(%s)：%w", dir, err)
 	}
 
 	// 再处理当前合并的视频文件
 	hanlders.ChHandle <- &hanlders.InfoHandle{
-		Path:    s.Path,
+		Path:    unique,
 		Title:   s.Title,
 		Handler: s.Handler,
 	}
