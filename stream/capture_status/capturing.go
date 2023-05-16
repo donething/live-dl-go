@@ -1,4 +1,4 @@
-package stream
+package capture_status
 
 import (
 	"fmt"

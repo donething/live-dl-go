@@ -6,10 +6,10 @@ import (
 	"github.com/donething/live-dl-go/hanlders"
 	"github.com/donething/live-dl-go/sites/entity"
 	"github.com/donething/live-dl-go/sites/plats"
+	"github.com/donething/live-dl-go/stream/capture_status"
 	streamentity "github.com/donething/live-dl-go/stream/entity"
 	"github.com/donething/live-dl-go/stream/flv"
 	"github.com/donething/live-dl-go/stream/m3u8"
-	"github.com/donething/live-dl-go/stream/stream"
 	"github.com/donething/utils-go/dotext"
 	"path/filepath"
 	"strings"
@@ -28,7 +28,7 @@ const (
 // 录制表 capturing 通过传递，方便在调用处获取录制状态
 //
 // 当 stream 为 nil 时，将根据直播流地址自动生成
-func StartAnchor(capturing *stream.CapStatus[streamentity.IStream],
+func StartAnchor(capturing *capture_status.CapStatus[streamentity.IStream],
 	s streamentity.IStream,
 	anchor entity.Anchor, workdir string, fileSizeThreshold int64, handler hanlders.IHandler) error {
 	// 开始录制该主播的时间
@@ -46,7 +46,7 @@ func StartAnchor(capturing *stream.CapStatus[streamentity.IStream],
 	}
 
 	// 读取录播状态的键
-	key := stream.GenCapturingKey(&anchor)
+	key := capture_status.GenCapturingKey(&anchor)
 
 	if !info.IsLive {
 		logger.Info.Printf("😴【%s】没有在播(%+v)\n", info.Name, anchor)

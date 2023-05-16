@@ -6,15 +6,15 @@ import (
 	"github.com/donething/live-dl-go/sites/douyin"
 	"github.com/donething/live-dl-go/sites/entity"
 	"github.com/donething/live-dl-go/sites/zuji"
+	"github.com/donething/live-dl-go/stream/capture_status"
 	entity2 "github.com/donething/live-dl-go/stream/entity"
-	"github.com/donething/live-dl-go/stream/stream"
 	"github.com/donething/utils-go/dotg"
 	"os"
 	"testing"
 )
 
 var (
-	capturing = stream.New[entity2.IStream]()
+	capturing = capture_status.New[entity2.IStream]()
 
 	tgHandler = hanlders.TGHandler{
 		TG:     dotg.NewTGBot(os.Getenv("MY_TG_TOKEN")),
