@@ -7,11 +7,11 @@ import (
 	"github.com/donething/live-dl-go/sites/entity"
 	"github.com/donething/live-dl-go/sites/plats"
 	streamentity "github.com/donething/live-dl-go/stream/entity"
+	"github.com/donething/live-dl-go/stream/entity/capture_status"
 	"github.com/donething/live-dl-go/stream/flv"
 	"github.com/donething/live-dl-go/stream/m3u8"
 	"github.com/donething/utils-go/dotext"
 	"strings"
-	"sync"
 	"time"
 )
 
@@ -22,11 +22,14 @@ const (
 
 // StartAnchor 开始录制直播流
 //
-// 参数为 正在录制表、直播流（Flv、M3u8）、主播信息、临时文件存储路径、单视频大小、视频处理器
+// 参数为：正在录制表、直播流（Flv、M3u8）、主播信息、临时文件存储路径、单视频大小、视频处理器
+//
+// 录制表 capturing 通过传递，方便在调用处获取录制状态
 //
 // 当 stream 为 nil 时，将根据直播流地址自动生成
-func StartAnchor(capturing *sync.Map, stream streamentity.IStream, anchor entity.Anchor, path string,
-	fileSizeThreshold int64, handler hanlders.IHandler) error {
+func StartAnchor(capturing *capture_status.Capture[streamentity.IStream],
+	stream streamentity.IStream,
+	anchor entity.Anchor, path string, fileSizeThreshold int64, handler hanlders.IHandler) error {
 	// 开始录制该主播的时间
 	start := dotext.FormatDate(time.Now(), "20060102")
 
@@ -41,23 +44,19 @@ func StartAnchor(capturing *sync.Map, stream streamentity.IStream, anchor entity
 		return err
 	}
 
-	// 是否正在录播的键
-	key := GenCapturingKey(&anchor)
+	// 读取录播状态的键
+	key := capture_status.GenCapturingKey(&anchor)
 
 	if !info.IsLive {
 		logger.Info.Printf("😴【%s】没有在播(%+v)\n", info.Name, anchor)
-		capturing.Delete(key)
+		capturing.Del(key)
 		return nil
 	}
 
 	// 判断此次是否需要录制视频
 	// 存在表示正在录制且此次不用换新文件存储，不重复录制，返回
-	if s, exists := capturing.Load(key); exists {
-		var bytes = ""
-		if ss, ok := s.(streamentity.IStream); ok {
-			bytes = dotext.BytesHumanReadable(ss.GetStream().CurBytes.GetBytes())
-		}
-
+	if s, exists := capturing.Get(key); exists {
+		bytes := dotext.BytesHumanReadable(s.GetStream().CurBytes.GetBytes())
 		logger.Info.Printf("😊【%s】正在录制(%+v)，当前文件已写入 %s/%s\n", info.Name, anchor,
 			bytes, dotext.BytesHumanReadable(fileSizeThreshold))
 		return nil
@@ -80,12 +79,11 @@ func StartAnchor(capturing *sync.Map, stream streamentity.IStream, anchor entity
 			return fmt.Errorf("没有匹配到直播流的类型：%s", info.StreamUrl)
 		}
 	}
+	// 记录正在录制的标识
+	capturing.Set(key, stream)
 
 	// 开始录制直播流
 	logger.Info.Printf("😙【%s】开始录制直播(%+v)\n", info.Name, anchor)
-
-	// 记录正在录制的标识
-	capturing.Store(key, stream)
 
 	err = stream.Capture()
 	// 当录制出错时，要判断出错情况：在获取直播流出错时，先判断主播此时是否在播，主播且出错才是真正的录制错误
@@ -102,14 +100,9 @@ func StartAnchor(capturing *sync.Map, stream streamentity.IStream, anchor entity
 
 	// 已下播，结束录制
 	logger.Info.Printf("😶【%s】已中断直播(%+v)，停止录制\n", info.Name, anchor)
-	capturing.Delete(key)
+	capturing.Del(key)
 
 	return nil
-}
-
-// GenCapturingKey 正在录制的主播的键，避免重复录制，格式如 "<平台>_<主播ID>"，如 "bili_12345"
-func GenCapturingKey(anchor *entity.Anchor) string {
-	return fmt.Sprintf("%s_%s", anchor.Plat, anchor.ID)
 }
 
 // 获取主播信息，可指定失败后的重试次数

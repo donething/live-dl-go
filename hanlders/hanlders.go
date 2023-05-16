@@ -55,5 +55,6 @@ func handler() {
 			logger.Error.Printf("处理视频文件出错(%s)：%s\n", info.Path, err)
 			continue
 		}
+		logger.Info.Printf("完成处理视频文件：%s\n", info.Path)
 	}
 }

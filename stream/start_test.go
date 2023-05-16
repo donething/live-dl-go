@@ -5,14 +5,15 @@ import (
 	"github.com/donething/live-dl-go/sites/douyin"
 	"github.com/donething/live-dl-go/sites/entity"
 	"github.com/donething/live-dl-go/sites/zuji"
+	entity2 "github.com/donething/live-dl-go/stream/entity"
+	"github.com/donething/live-dl-go/stream/entity/capture_status"
 	"github.com/donething/utils-go/dotg"
 	"os"
-	"sync"
 	"testing"
 )
 
 var (
-	capturing = &sync.Map{}
+	capturing = capture_status.New[entity2.IStream]()
 
 	tgHandler = hanlders.TGHandler{
 		TG:     dotg.NewTGBot(os.Getenv("MY_TG_TOKEN")),
@@ -42,7 +43,7 @@ func TestStartAnchorM3u8(t *testing.T) {
 	}
 
 	err := StartAnchor(capturing, nil, anchor, "D:/Tmp/live/zuji_15722883.ts",
-		5*1024*1024, &localHandle)
+		5*1024*1024, &tgHandler)
 	if err != nil {
 		t.Fatal(err)
 	}
