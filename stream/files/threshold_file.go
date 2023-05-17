@@ -61,6 +61,7 @@ func (f *ThresholdFile) StartSave() error {
 
 	// 缓存
 	var buf = make([]byte, 32*1024)
+	logger.Info.Printf("-- 开始循环\n")
 
 	for {
 		logger.Info.Printf("-- 检查是否停止\n")
@@ -89,11 +90,15 @@ func (f *ThresholdFile) StartSave() error {
 		}
 	}
 
+	logger.Info.Printf("-- 开始录制，结束循环\n")
+
 	return nil
 }
 
 // Write 写入
 func (f *ThresholdFile) Write(bs []byte) (int, error) {
+	logger.Info.Printf("-- 开始写入\n")
+
 	// 初始化文件
 	if f.file == nil {
 		// 打开写入的文件
@@ -108,6 +113,7 @@ func (f *ThresholdFile) Write(bs []byte) (int, error) {
 		logger.Info.Printf("-- 创建文件结束\n")
 
 	}
+	logger.Info.Printf("-- 开始实际写入\n")
 
 	// 写入
 	n, err := f.file.Write(bs)
@@ -115,6 +121,7 @@ func (f *ThresholdFile) Write(bs []byte) (int, error) {
 		return 0, fmt.Errorf("写入视频文件出错：%w", err)
 	}
 	f.stream.CurBytes.AddBytes(int64(n))
+	logger.Info.Printf("-- 开始判断是否换文件\n")
 
 	// 判断是否需要更换新文件保存
 	if f.threshold != 0 && f.stream.CurBytes.GetBytes() >= f.threshold {
@@ -146,6 +153,6 @@ func (f *ThresholdFile) Write(bs []byte) (int, error) {
 			f.reader = reader
 		}
 	}
-
+	logger.Info.Printf("-- 开始录制，结束判断换文件\n")
 	return n, nil
 }
