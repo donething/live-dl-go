@@ -45,7 +45,7 @@ func (s *Stream) Capture() error {
 	logger.Info.Printf("-- 开始录制，结束读取头\n")
 
 	// 写入文件
-	tFile := files.NewThresholdFile(reader, true, s.Path, s.FileSizeThreshold, s.Stream)
+	tFile := files.NewThresholdFile(reader, s.Path, s.FileSizeThreshold, s.Stream)
 
 	logger.Info.Printf("-- 开始录制，开始保存\n")
 
