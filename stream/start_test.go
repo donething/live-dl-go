@@ -39,12 +39,12 @@ func TestStartAnchorFlv(t *testing.T) {
 
 func TestStartAnchorBili(t *testing.T) {
 	anchor := entity.Anchor{
-		ID:   "50329220",
+		ID:   "8739477",
 		Plat: bili.Plat,
 	}
 
 	err := StartAnchor(capturing, nil, anchor, "D:/Tmp/live/",
-		10*1024*1024, &tgHandler)
+		5*1024*1024, &localHandle)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -1,11 +1,7 @@
 package entity
 
 import (
-	"fmt"
-	"github.com/donething/live-dl-go/comm"
-	"github.com/donething/live-dl-go/comm/logger"
 	"github.com/donething/live-dl-go/hanlders"
-	"io"
 	"sync"
 )
 
@@ -46,21 +42,6 @@ type Stream struct {
 
 	// 停止录制视频流
 	Stop StopType
-}
-
-// CreateReader 创建输入流
-func (s *Stream) CreateReader() (io.ReadCloser, error) {
-	resp, err := comm.Client.Get(s.StreamUrl, s.Headers)
-	if err != nil {
-		return nil, fmt.Errorf("创建视频输入流出错。请求视频出错：%w", err)
-	}
-
-	if resp.StatusCode < 200 || resp.StatusCode > 299 {
-		return nil, fmt.Errorf("创建视频输入流出错。读取视频的响应码：%s (URL: %s)", resp.Status, s.StreamUrl)
-	}
-
-	logger.Info.Printf("-- 获取输入流：%s\n", s.StreamUrl)
-	return resp.Body, nil
 }
 
 // GetBytes 获取当前视频文件中已写入的字节数

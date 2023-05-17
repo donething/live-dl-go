@@ -2,31 +2,35 @@ package flv
 
 import (
 	"fmt"
-	"github.com/donething/live-dl-go/comm/logger"
+	"github.com/donething/live-dl-go/comm"
 	"github.com/donething/live-dl-go/hanlders"
+	entity2 "github.com/donething/live-dl-go/sites/entity"
 	"github.com/donething/live-dl-go/stream/entity"
-	"github.com/donething/live-dl-go/stream/files"
+	"io"
 )
+
+// CreateReaderFun 创建 flv 视频输入流的函数类型
+type CreateReaderFun func(anchorSite entity2.IAnchor) (io.ReadCloser, error)
 
 // Stream flv 直播流
 type Stream struct {
 	*entity.Stream
+	anchor entity2.IAnchor
 }
 
 // NewStream 创建 Stream 的实例
 //
 // 参数 path 视频的保存路径，以 ".flv" 结尾
-func NewStream(title, streamUrl string, headers map[string]string, path string,
-	fileSizeThreshold int64, handler hanlders.IHandler) entity.IStream {
+func NewStream(title, path string, fileSizeThreshold int64,
+	handler hanlders.IHandler, anchor entity2.IAnchor) entity.IStream {
 	return &Stream{
 		Stream: &entity.Stream{
 			Title:             title,
-			StreamUrl:         streamUrl,
-			Headers:           headers,
 			Path:              path,
 			FileSizeThreshold: fileSizeThreshold,
 			Handler:           handler,
 		},
+		anchor: anchor,
 	}
 }
 
@@ -36,24 +40,33 @@ func (s *Stream) GetStream() *entity.Stream {
 
 // Capture 录制 Flv 视频流
 func (s *Stream) Capture() error {
-	logger.Info.Printf("-- 开始录制，读取头\n")
-
-	reader, err := s.CreateReader()
-	if err != nil {
-		return fmt.Errorf("创建 Flv 视频输入流出错：%w", err)
-	}
-	logger.Info.Printf("-- 开始录制，结束读取头\n")
-
 	// 写入文件
-	tFile := files.NewThresholdFile(reader, s.Path, s.FileSizeThreshold, s.Stream)
+	tFile := NewThresholdFile(s.Path, s.FileSizeThreshold, s)
 
-	logger.Info.Printf("-- 开始录制，开始保存\n")
-
-	err = tFile.StartSave()
+	err := tFile.StartSave()
 	if err != nil {
-		return fmt.Errorf("将 Flv 写入可限制大小的视频文件出错：%w", err)
+		return fmt.Errorf("将 Flv 视频流写入可限制大小的视频文件出错：%w", err)
 	}
-	logger.Info.Printf("-- 开始录制，结束保存\n")
 
 	return nil
+}
+
+// CreateReader 创建 flv 视频输入流
+func (s *Stream) CreateReader() (io.ReadCloser, error) {
+	info, err := entity2.TryGetAnchorInfo(s.anchor, entity2.MaxRetry)
+	if err != nil {
+		return nil, fmt.Errorf("创建 Flv Reader 出错：获取主播信息出错：%w", err)
+	}
+
+	resp, err := comm.Client.Get(info.StreamUrl, s.anchor.GetStreamHeaders())
+	if err != nil {
+		return nil, fmt.Errorf("创建 Flv Reader 出错：：请求视频出错：%w", err)
+	}
+
+	if resp.StatusCode < 200 || resp.StatusCode > 299 {
+		return nil, fmt.Errorf("创建 Flv Reader 出错：：读取视频的响应码：%s (URL: %s)",
+			resp.Status, info.StreamUrl)
+	}
+
+	return resp.Body, nil
 }

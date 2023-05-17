@@ -16,11 +16,6 @@ import (
 	"time"
 )
 
-const (
-	// 获取主播信息失败后，重试的次数
-	maxRetry = 3
-)
-
 // StartAnchor 开始录制直播流
 //
 // 参数为：正在录制表、直播流（Flv、M3u8）、主播信息、临时工作目录、单视频大小、视频处理器
@@ -40,7 +35,7 @@ func StartAnchor(capturing *capture_status.CapStatus[streamentity.IStream],
 	}
 
 	// 	获取主播信息
-	info, err := tryGetAnchorInfo(anchorSite, maxRetry)
+	info, err := entity.TryGetAnchorInfo(anchorSite, entity.MaxRetry)
 	if err != nil {
 		return err
 	}
@@ -82,7 +77,7 @@ func StartAnchor(capturing *capture_status.CapStatus[streamentity.IStream],
 		if strings.Contains(strings.ToLower(info.StreamUrl), ".flv") {
 			// 保存依然为 flv，只是发送到 TG 前转为 mp4
 			path := filepath.Join(workdir, name+".flv")
-			s = flv.NewStream(title, info.StreamUrl, headers, path, fileSizeThreshold, handler)
+			s = flv.NewStream(title, path, fileSizeThreshold, handler, anchorSite)
 		} else if strings.Contains(strings.ToLower(info.StreamUrl), ".m3u8") {
 			// m3u8 合并片段时就转为 mp4
 			path := filepath.Join(workdir, name+".mp4")
@@ -100,7 +95,7 @@ func StartAnchor(capturing *capture_status.CapStatus[streamentity.IStream],
 	err = s.Capture()
 	// 当录制出错时，要判断出错情况：在获取直播流出错时，先判断主播此时是否在播，主播且出错才是真正的录制错误
 	if err != nil {
-		infoCheck, err := tryGetAnchorInfo(anchorSite, maxRetry)
+		infoCheck, err := entity.TryGetAnchorInfo(anchorSite, entity.MaxRetry)
 		if err != nil {
 			return err
 		}
@@ -115,28 +110,4 @@ func StartAnchor(capturing *capture_status.CapStatus[streamentity.IStream],
 	capturing.Del(key)
 
 	return nil
-}
-
-// 获取主播信息，可指定失败后的重试次数
-func tryGetAnchorInfo(anchorSite entity.IAnchor, retry int) (*entity.AnchorInfo, error) {
-	fail := 0
-	var info *entity.AnchorInfo
-	var err error
-
-	for {
-		info, err = anchorSite.GetAnchorInfo()
-		if err != nil {
-			// 重试
-			if fail < retry {
-				fail++
-				time.Sleep(1 * time.Second)
-				continue
-			}
-
-			return nil, err
-		}
-
-		// 获取成功
-		return info, nil
-	}
 }
