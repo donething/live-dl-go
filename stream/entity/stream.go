@@ -3,6 +3,7 @@ package entity
 import (
 	"fmt"
 	"github.com/donething/live-dl-go/comm"
+	"github.com/donething/live-dl-go/comm/logger"
 	"github.com/donething/live-dl-go/hanlders"
 	"io"
 	"sync"
@@ -58,6 +59,7 @@ func (s *Stream) CreateReader() (io.ReadCloser, error) {
 		return nil, fmt.Errorf("创建视频输入流出错。读取视频的响应码：%s (URL: %s)", resp.Status, s.StreamUrl)
 	}
 
+	logger.Info.Printf("-- 获取输入流：%s\n", s.StreamUrl)
 	return resp.Body, nil
 }
 

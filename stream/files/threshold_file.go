@@ -20,8 +20,6 @@ type ThresholdFile struct {
 	threshold int64
 	// 流的信息
 	stream *entity.Stream
-	// 新文件是否需要重读数据输入流。flv 视频需要为 true 来获取新文件的视频头信息；m3u8 视频流可根据流的失效时间判断是否传 ture
-	needRecreate bool
 
 	// 根据 path 自动生成的临时路径，避免重复
 	uniPath string
@@ -32,14 +30,13 @@ type ThresholdFile struct {
 // NewThresholdFile 创建实例
 //
 // 当只调用`Write()`时，`reader`可以传`nil`
-func NewThresholdFile(reader io.ReadCloser, needRecreate bool, path string, threshold int64,
+func NewThresholdFile(reader io.ReadCloser, path string, threshold int64,
 	stream *entity.Stream) *ThresholdFile {
 	return &ThresholdFile{
-		reader:       reader,
-		needRecreate: needRecreate,
-		path:         path,
-		threshold:    threshold,
-		stream:       stream,
+		reader:    reader,
+		path:      path,
+		threshold: threshold,
+		stream:    stream,
 	}
 }
 
@@ -140,19 +137,18 @@ func (f *ThresholdFile) Write(bs []byte) (int, error) {
 		f.uniPath = ""
 		f.stream.CurBytes.ResetBytes()
 
-		// 换新文件存储时，可能要重新创建数据输入流
-		if f.needRecreate {
-			f.reader.Close()
-			logger.Info.Printf("-- 获取 Reader\n")
-			reader, err := f.stream.CreateReader()
-			logger.Info.Printf("-- 获取 Reader结束, err: %+v\n", nil)
+		// 换新文件存储时，要重新创建数据输入流
+		f.reader.Close()
+		logger.Info.Printf("-- 获取 Reader\n")
+		reader, err := f.stream.CreateReader()
+		logger.Info.Printf("-- 获取 Reader结束, err: %+v\n", nil)
 
-			if err != nil {
-				return 0, fmt.Errorf("重新创建数据输入流出错：%w", err)
-			}
-			f.reader = reader
+		if err != nil {
+			return 0, fmt.Errorf("重新创建数据输入流出错：%w", err)
 		}
+		f.reader = reader
+		logger.Info.Printf("-- 结束判断换文件，退出 if\n")
 	}
-	logger.Info.Printf("-- 开始录制，结束判断换文件\n")
+	logger.Info.Printf("-- 结束判断换文件\n")
 	return n, nil
 }

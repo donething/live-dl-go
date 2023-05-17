@@ -39,7 +39,7 @@ func TestStartAnchorFlv(t *testing.T) {
 
 func TestStartAnchorBili(t *testing.T) {
 	anchor := entity.Anchor{
-		ID:   "2011822166",
+		ID:   "50329220",
 		Plat: bili.Plat,
 	}
 
