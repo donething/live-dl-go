@@ -41,7 +41,11 @@ func (f *ThresholdFile) StartSave() error {
 	// 最后合并、发送该文件夹中的视频片段
 	defer func() {
 		f.file.Close()
-		f.reader.Close()
+		// 可能执行 f.stream.CreateReader() 就出错了，无法创建输入流
+		// 所以需要判断是否为 nil，才能调用 Close()
+		if f.reader != nil {
+			f.reader.Close()
+		}
 
 		if exists, err := dofile.Exists(f.uniPath); err != nil || !exists {
 			return
