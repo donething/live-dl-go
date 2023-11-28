@@ -19,8 +19,8 @@ type InfoHandle struct {
 	Handler IHandler
 	// 上传到TG时的分段大小，为 0 不分段
 	FileSizeThreshold int64
-	// 	上传成功是否保留源文件。TG Handler 可设置
-	Reserve bool
+	// 	上传成功是否删除源文件。TG Handler 可设置
+	Delete bool
 }
 
 // 处理文件的goroutine数量

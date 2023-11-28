@@ -15,7 +15,7 @@ type TGHandler struct {
 
 // Handle 发送**视频**到 TG
 func (tg *TGHandler) Handle(info *InfoHandle) error {
-	_, err := tg.TG.SendVideo(tg.ChatID, info.Title, info.Path, info.FileSizeThreshold, "", info.Reserve)
+	_, err := tg.TG.SendVideo(tg.ChatID, info.Title, info.Path, info.FileSizeThreshold, "", info.Delete)
 	return err
 }
 
