@@ -14,7 +14,7 @@ import (
 
 // AnchorDouyin 抖音主播
 type AnchorDouyin struct {
-	// 主播的 ID 为直播间号
+	// 主播的 UID 为直播间号
 	*entity.Anchor
 }
 
@@ -37,16 +37,16 @@ var (
 // roomid 直播间号
 func (a *AnchorDouyin) GetAnchorInfo() (*entity.AnchorInfo, error) {
 	// 提取直播间的直播信息
-	u := fmt.Sprintf("https://live.douyin.com/%s", a.ID)
+	u := fmt.Sprintf("https://live.douyin.com/%s", a.UID)
 	roomStatus, err := parseRenderData[RoomStatus](u)
 	if err != nil {
-		return entity.GenAnchorInfoWhenErr(a.Anchor, fmt.Sprintf("https://live.douyin.com/%s", a.ID)),
+		return entity.GenAnchorInfoWhenErr(a.Anchor, fmt.Sprintf("https://live.douyin.com/%s", a.UID)),
 			fmt.Errorf("获取直播间出错：%w", err)
 	}
 
 	// 是否开播，关系到页面中是否存在数据
 	if roomStatus.App.InitialState.RoomStore.RoomInfo.Anchor.Nickname == "" {
-		return entity.GenAnchorInfoWhenErr(a.Anchor, fmt.Sprintf("https://live.douyin.com/%s", a.ID)),
+		return entity.GenAnchorInfoWhenErr(a.Anchor, fmt.Sprintf("https://live.douyin.com/%s", a.UID)),
 			fmt.Errorf("不存在的直播间")
 	}
 

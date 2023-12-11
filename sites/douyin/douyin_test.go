@@ -19,7 +19,7 @@ func TestAnchorDouyin_GetAnchorInfo(t *testing.T) {
 		{
 			name: "测试 假树",
 			fields: fields{Anchor: &entity.Anchor{
-				ID:   "165251594775",
+				UID:  "165251594775",
 				Plat: Plat,
 			}},
 			want: &entity.AnchorInfo{

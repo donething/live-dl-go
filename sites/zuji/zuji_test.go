@@ -18,7 +18,7 @@ func TestAnchorZuji_GetAnchorInfo(t *testing.T) {
 		{
 			name: "测试 蝴蝶曼",
 			fields: fields{Anchor: &entity.Anchor{
-				ID:   "15050303",
+				UID:  "15050303",
 				Plat: Plat,
 			}},
 			want: &entity.AnchorInfo{

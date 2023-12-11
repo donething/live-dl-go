@@ -71,16 +71,16 @@ func getBasicInfo(uid string, sessionid string) (*RespInterface, error) {
 // GetAnchorInfo 3. 获取足迹主播的信息
 func (a *AnchorZuji) GetAnchorInfo() (*entity.AnchorInfo, error) {
 	// 先获取基础信息
-	sessionid, err := getSessionid(a.ID)
+	sessionid, err := getSessionid(a.UID)
 	if err != nil {
 		return entity.GenAnchorInfoWhenErr(a.Anchor,
-			fmt.Sprintf("https://share-aq2g4taz.i.%s/u/%s", host, a.ID)), err
+			fmt.Sprintf("https://share-aq2g4taz.i.%s/u/%s", host, a.UID)), err
 	}
 
-	vData, err := getBasicInfo(a.ID, sessionid)
+	vData, err := getBasicInfo(a.UID, sessionid)
 	if err != nil {
 		return entity.GenAnchorInfoWhenErr(a.Anchor,
-			fmt.Sprintf("https://share-aq2g4taz.i.%s/u/%s", host, a.ID)), err
+			fmt.Sprintf("https://share-aq2g4taz.i.%s/u/%s", host, a.UID)), err
 	}
 
 	info := vData.Retinfo
@@ -88,7 +88,7 @@ func (a *AnchorZuji) GetAnchorInfo() (*entity.AnchorInfo, error) {
 		Anchor: a.Anchor,
 		Avatar: info.Logourl,
 		Name:   info.Nickname,
-		WebUrl: fmt.Sprintf("http://share-g3g5zb3o.i.%s/r/%s", host, a.ID),
+		WebUrl: fmt.Sprintf("http://share-g3g5zb3o.i.%s/r/%s", host, a.UID),
 		Title:  info.Title,
 		IsLive: info.Roomstatus == 1,
 		Denied: info.Permission != 0,

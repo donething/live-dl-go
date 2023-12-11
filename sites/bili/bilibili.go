@@ -9,7 +9,7 @@ import (
 
 // AnchorBili 哔哩哔哩主播
 type AnchorBili struct {
-	// 主播的 ID 为用户 ID
+	// 主播的 UID 为用户 ID，非房间号
 	*entity.Anchor
 }
 
@@ -21,13 +21,13 @@ const (
 // GetAnchorInfo 获取哔哩哔哩直播流的地址
 func (a *AnchorBili) GetAnchorInfo() (*entity.AnchorInfo, error) {
 	// 获取房间信息
-	roomStatus, err := getRoomStatus(a.ID)
+	roomStatus, err := getRoomStatus(a.UID)
 	if err != nil {
-		return entity.GenAnchorInfoWhenErr(a.Anchor, fmt.Sprintf("https://space.bilibili.com/%s", a.ID)), err
+		return entity.GenAnchorInfoWhenErr(a.Anchor, fmt.Sprintf("https://space.bilibili.com/%s", a.UID)), err
 	}
 	playUrl, err := getPlayUrl(roomStatus.RoomID)
 	if err != nil {
-		return entity.GenAnchorInfoWhenErr(a.Anchor, fmt.Sprintf("https://space.bilibili.com/%s", a.ID)), err
+		return entity.GenAnchorInfoWhenErr(a.Anchor, fmt.Sprintf("https://space.bilibili.com/%s", a.UID)), err
 	}
 
 	info := entity.AnchorInfo{

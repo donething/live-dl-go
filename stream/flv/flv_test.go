@@ -22,7 +22,7 @@ var (
 
 func TestStream_Capture(t *testing.T) {
 	anchor := entity.Anchor{
-		ID:   "2011822166",
+		UID:  "2011822166",
 		Plat: bili.Plat,
 	}
 

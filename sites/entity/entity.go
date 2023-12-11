@@ -8,7 +8,7 @@ import (
 // Anchor 需要获取直播流的主播的信息
 type Anchor struct {
 	// 直播流
-	ID string `json:"id"`
+	UID string `json:"uid"`
 	// 直播平台。必须为`comm.go`中的常量 Plat** 项
 	Plat string `json:"plat"`
 }
@@ -44,7 +44,7 @@ const (
 func GenAnchorInfoWhenErr(anchor *Anchor, webUrl string) *AnchorInfo {
 	return &AnchorInfo{
 		Anchor: anchor,
-		Name:   fmt.Sprintf("%s %s", anchor.Plat, anchor.ID),
+		Name:   fmt.Sprintf("%s %s", anchor.Plat, anchor.UID),
 		Title:  "获取出错",
 		WebUrl: webUrl,
 	}

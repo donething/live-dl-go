@@ -26,7 +26,7 @@ var (
 
 func TestStartAnchorFlv(t *testing.T) {
 	anchor := entity.Anchor{
-		ID:   "249406961231",
+		UID:  "249406961231",
 		Plat: douyin.Plat,
 	}
 
@@ -39,7 +39,7 @@ func TestStartAnchorFlv(t *testing.T) {
 
 func TestStartAnchorBili(t *testing.T) {
 	anchor := entity.Anchor{
-		ID:   "8739477",
+		UID:  "8739477",
 		Plat: bili.Plat,
 	}
 
@@ -52,7 +52,7 @@ func TestStartAnchorBili(t *testing.T) {
 
 func TestStartAnchorM3u8(t *testing.T) {
 	anchor := entity.Anchor{
-		ID:   "15722883",
+		UID:  "15722883",
 		Plat: zuji.Plat,
 	}
 
@@ -65,7 +65,7 @@ func TestStartAnchorM3u8(t *testing.T) {
 
 func TestStartAnchorZuji(t *testing.T) {
 	anchor := entity.Anchor{
-		ID:   "20221998",
+		UID:  "20221998",
 		Plat: zuji.Plat,
 	}
 

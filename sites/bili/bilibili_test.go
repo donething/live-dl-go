@@ -18,7 +18,7 @@ func TestAnchorBili_GetAnchorInfo(t *testing.T) {
 		{
 			name: "测试 DYS",
 			fields: fields{Anchor: &entity.Anchor{
-				ID:   "8739477",
+				UID:  "8739477",
 				Plat: Plat,
 			}},
 			want: &entity.AnchorInfo{

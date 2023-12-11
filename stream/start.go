@@ -73,7 +73,7 @@ func StartAnchor(capturing *capture_status.CapStatus[streamentity.IStream],
 
 	// 如果没有指定直播流的类型，就自动匹配
 	if s == nil {
-		name := fmt.Sprintf("%s_%s", anchor.Plat, anchor.ID)
+		name := fmt.Sprintf("%s_%s", anchor.Plat, anchor.UID)
 		if strings.Contains(strings.ToLower(info.StreamUrl), ".flv") {
 			// 保存依然为 flv，只是发送到 TG 前转为 mp4
 			path := filepath.Join(workdir, name+".flv")
