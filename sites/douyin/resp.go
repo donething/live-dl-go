@@ -1,5 +1,85 @@
 package douyin
 
+// RoomInfo 房间信息
+//
+// 通过 https://live.douyin.com/webcast/room/web/enter API 获取的房间信息
+type RoomInfo struct {
+	Data struct {
+		// 房间信息
+		Data []struct {
+			// 房间 ID。如 "7313748685014305590"
+			IDStr string `json:"id_str"`
+			// 房间状态：2 开播；4 未播
+			Status    int    `json:"status"`
+			StatusStr string `json:"status_str"`
+			// 房间标题
+			Title string `json:"title"`
+			// 观看数量。如 "3000+"
+			UserCountStr string `json:"user_count_str"`
+			// 封面
+			Cover struct {
+				URLList []string `json:"url_list"`
+			} `json:"cover"`
+			// 直播流
+			StreamURL struct {
+				FlvPullURL struct {
+					FULLHD1 string `json:"FULL_HD1"`
+					HD1     string `json:"HD1"`
+					SD1     string `json:"SD1"`
+					SD2     string `json:"SD2"`
+				} `json:"flv_pull_url"`
+				DefaultResolution string `json:"default_resolution"`
+				HlsPullURLMap     struct {
+					FULLHD1 string `json:"FULL_HD1"`
+					HD1     string `json:"HD1"`
+					SD1     string `json:"SD1"`
+					SD2     string `json:"SD2"`
+				} `json:"hls_pull_url_map"`
+				HlsPullURL        string `json:"hls_pull_url"`
+				StreamOrientation int    `json:"stream_orientation"`
+			} `json:"stream_url"`
+			// 获取主播信息推荐从上级的 User 中获取，此处的 owner 未开播时为空
+			Owner struct {
+				// 用户ID。如 "61841800442"
+				IDStr string `json:"id_str"`
+				// Sec ID。如 "MS4wLjABAAAAE8Uc9r5r5aCIPpuIzF8QSO4xu1-QgUPNqbMmmjB374w"
+				SecUID      string `json:"sec_uid"`
+				Nickname    string `json:"nickname"`
+				AvatarThumb struct {
+					URLList []string `json:"url_list"`
+				} `json:"avatar_thumb"`
+			} `json:"owner"`
+			// 喜欢。如 2428624
+			LikeCount    int `json:"like_count"`
+			PaidLiveData struct {
+				PaidType           int  `json:"paid_type"`
+				ViewRight          int  `json:"view_right"`
+				Duration           int  `json:"duration"`
+				Delivery           int  `json:"delivery"`
+				NeedDeliveryNotice bool `json:"need_delivery_notice"`
+				AnchorRight        int  `json:"anchor_right"`
+				PayAbType          int  `json:"pay_ab_type"`
+				PrivilegeInfo      struct {
+				} `json:"privilege_info"`
+				PrivilegeInfoMap struct {
+				} `json:"privilege_info_map"`
+			} `json:"paid_live_data"`
+		} `json:"data"`
+		// 主播信息。获取主播信息推荐从这里获取，房间中的 owner 未开播时为空
+		User struct {
+			IDStr       string `json:"id_str"`
+			SecUID      string `json:"sec_uid"`
+			Nickname    string `json:"nickname"`
+			AvatarThumb struct {
+				URLList []string `json:"url_list"`
+			} `json:"avatar_thumb"`
+		} `json:"user"`
+	} `json:"data"`
+
+	// 0 表示正常
+	StatusCode int `json:"status_code"`
+}
+
 // 抖音的用户主页和直播间源代码中，都会携带一段ID为"RENDER_DATA"的脚本，里面含有数据信息
 // 获取：在页面控制台中执行 copy(decodeURIComponent(document.querySelector("#RENDER_DATA").text))
 // 发送请求需要携带 Cookie，而且经常失效。可以在浏览器的隐私模式下获取

@@ -17,7 +17,7 @@ func TestAnchorDouyin_GetAnchorInfo(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "测试 假树",
+			name: "测试不在播 假树",
 			fields: fields{Anchor: &entity.Anchor{
 				UID:  "165251594775",
 				Plat: Plat,
@@ -27,7 +27,19 @@ func TestAnchorDouyin_GetAnchorInfo(t *testing.T) {
 			},
 			wantErr: false,
 		},
+		{
+			name: "测试不在播 ☁️云福晋☁️",
+			fields: fields{Anchor: &entity.Anchor{
+				UID:  "483360313799",
+				Plat: Plat,
+			}},
+			want: &entity.AnchorInfo{
+				Name: "☁️云福晋☁️",
+			},
+			wantErr: false,
+		},
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			a := &AnchorDouyin{
