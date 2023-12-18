@@ -9,6 +9,7 @@ func TestAnchorZuji_GetAnchorInfo(t *testing.T) {
 	type fields struct {
 		Anchor *entity.Anchor
 	}
+
 	tests := []struct {
 		name    string
 		fields  fields
@@ -26,6 +27,17 @@ func TestAnchorZuji_GetAnchorInfo(t *testing.T) {
 			},
 			wantErr: false,
 		},
+		{
+			name: "测试 妮妮🐬",
+			fields: fields{Anchor: &entity.Anchor{
+				UID:  "29608771",
+				Plat: Plat,
+			}},
+			want: &entity.AnchorInfo{
+				Name: "妮妮🐬",
+			},
+			wantErr: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -39,7 +51,7 @@ func TestAnchorZuji_GetAnchorInfo(t *testing.T) {
 			}
 
 			// 只比较 Name 属性，其它很多值经常变动，不便比较
-			if got.Name != tt.want.Name {
+			if got.Name != tt.want.Name || (got.IsLive && got.StreamUrl == "") {
 				t.Errorf("GetAnchorInfo() got = %v, want %v", got, tt.want)
 			}
 		})

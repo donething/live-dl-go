@@ -9,9 +9,6 @@ import (
 )
 
 const (
-	// 目标域名
-	host = "szsbtech.com"
-
 	Plat = "zuji"
 	name = "足迹"
 )
@@ -27,7 +24,7 @@ func getSessionid(uid string) (string, error) {
 	var headers = map[string]string{
 		"User-Agent": comm.UAAndroid,
 	}
-	text, err := comm.Client.GetText(fmt.Sprintf("http://share-g3g5zb3o.i.%s/r/%s", host, uid), headers)
+	text, err := comm.Client.GetText(fmt.Sprintf("http://share-djwgvyoc.i.lailer.net/r/%s", uid), headers)
 	if err != nil {
 		return "", fmt.Errorf("执行获取 session 的请求出错：%w", err)
 	}
@@ -48,7 +45,7 @@ func getBasicInfo(uid string, sessionid string) (*RespInterface, error) {
 		"User-Agent":   comm.UAAndroid,
 	}
 
-	u := fmt.Sprintf("http://share-g3g5zb3o.i.%s/call_interface.php", host)
+	u := "http://share-5s3frizy.i.lailer.net/call_interface.php"
 	data := fmt.Sprintf("joinroom=joinroom&room=%s&sessionid=%s", uid, sessionid)
 	bs, err := comm.Client.PostForm(u, data, postHeaders)
 	if err != nil {
@@ -71,16 +68,17 @@ func getBasicInfo(uid string, sessionid string) (*RespInterface, error) {
 // GetAnchorInfo 3. 获取足迹主播的信息
 func (a *AnchorZuji) GetAnchorInfo() (*entity.AnchorInfo, error) {
 	// 先获取基础信息
-	sessionid, err := getSessionid(a.UID)
-	if err != nil {
-		return entity.GenAnchorInfoWhenErr(a.Anchor,
-			fmt.Sprintf("https://share-aq2g4taz.i.%s/u/%s", host, a.UID)), err
-	}
+	sessionid := "g2023041309420334220VdBieQfjTwL7g"
+	// sessionid, err := getSessionid(a.UID)
+	// if err != nil {
+	// 	return entity.GenAnchorInfoWhenErr(a.Anchor,
+	// 		fmt.Sprintf("https://share-aq2g4taz.i.%s/u/%s", host, a.UID)), err
+	// }
 
 	vData, err := getBasicInfo(a.UID, sessionid)
 	if err != nil {
 		return entity.GenAnchorInfoWhenErr(a.Anchor,
-			fmt.Sprintf("https://share-aq2g4taz.i.%s/u/%s", host, a.UID)), err
+			fmt.Sprintf("http://share-djwgvyoc.i.lailer.net/u/%s", a.UID)), err
 	}
 
 	info := vData.Retinfo
@@ -88,7 +86,7 @@ func (a *AnchorZuji) GetAnchorInfo() (*entity.AnchorInfo, error) {
 		Anchor: a.Anchor,
 		Avatar: info.Logourl,
 		Name:   info.Nickname,
-		WebUrl: fmt.Sprintf("http://share-g3g5zb3o.i.%s/r/%s", host, a.UID),
+		WebUrl: fmt.Sprintf("http://share-djwgvyoc.i.lailer.net/r/%s", a.UID),
 		Title:  info.Title,
 		IsLive: info.Roomstatus == 1,
 		Denied: info.Permission != 0,
@@ -104,7 +102,7 @@ func (a *AnchorZuji) GetAnchorInfo() (*entity.AnchorInfo, error) {
 	var headers = map[string]string{
 		"User-Agent": comm.UAAndroid,
 	}
-	u := fmt.Sprintf("https://m.%s/appgw/v2/watchstart?vid=%s&sessionid=%s", host, info.Vid, sessionid)
+	u := fmt.Sprintf("http://s.lailer.net/v/watchstart?vid=%s&sessionid=%s", info.Vid, sessionid)
 	bs, err := comm.Client.GetBytes(u, headers)
 	if err != nil {
 		return nil, fmt.Errorf("执行获取直播流地址的请求出错：%w", err)
