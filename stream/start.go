@@ -105,8 +105,8 @@ func StartAnchor(capturing *capture_status.CapStatus[streamentity.IStream],
 		}
 	}
 
-	// 已下播，结束录制
-	logger.Info.Printf("😶【%s】已中断直播(%+v)，停止录制\n", info.Name, anchor)
+	// 已下播或已设为停止路径，结束录制
+	logger.Info.Printf("😶【%s】已中断直播(%+v)或已设为停止路径，结束录制\n", info.Name, anchor)
 	capturing.Del(key)
 
 	return nil
