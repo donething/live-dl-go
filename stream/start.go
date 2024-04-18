@@ -58,9 +58,9 @@ func StartAnchor(capturing *capture_status.CapStatus[streamentity.IStream],
 	// 判断此次是否需要录制视频
 	// 存在表示正在录制且此次不用换新文件存储，不重复录制，返回
 	if iStream, exists := capturing.Get(key); exists {
-		bytes := dotext.BytesHumanReadable(iStream.GetStream().CurBytes.GetBytes())
+		bytes := dotext.BytesHumanReadable(uint64(iStream.GetStream().CurBytes.GetBytes()))
 		logger.Info.Printf("😊【%s】正在录制(%+v)，当前文件已写入 %s/%s\n", info.Name, anchor,
-			bytes, dotext.BytesHumanReadable(fileSizeThreshold))
+			bytes, dotext.BytesHumanReadable(uint64(fileSizeThreshold)))
 		return nil
 	}
 
