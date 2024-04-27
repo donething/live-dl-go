@@ -3,28 +3,28 @@ package zuji
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/donething/live-dl-go/comm"
-	"github.com/donething/live-dl-go/sites/entity"
+	"github.com/donething/live-dl-go/anchors/base"
+	"github.com/donething/live-dl-go/request"
 	"regexp"
 )
 
 const (
-	Plat = "zuji"
-	name = "足迹"
+	Platform = "zuji"
+	Name     = "足迹"
 )
 
 // AnchorZuji 足迹主播
 type AnchorZuji struct {
 	// 主播的 ID 为用户 ID
-	*entity.Anchor
+	*base.Anchor
 }
 
 // 1. 获取 sessionid
 func getSessionid(uid string) (string, error) {
 	var headers = map[string]string{
-		"User-Agent": comm.UAAndroid,
+		"User-Agent": request.UAAndroid,
 	}
-	text, err := comm.Client.GetText(fmt.Sprintf("http://share-djwgvyoc.i.lailer.net/r/%s", uid), headers)
+	text, err := request.Client.GetText(fmt.Sprintf("http://share-djwgvyoc.i.lailer.net/r/%s", uid), headers)
 	if err != nil {
 		return "", fmt.Errorf("执行获取 session 的请求出错：%w", err)
 	}
@@ -42,12 +42,12 @@ func getSessionid(uid string) (string, error) {
 func getBasicInfo(uid string, sessionid string) (*RespInterface, error) {
 	postHeaders := map[string]string{
 		"Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-		"User-Agent":   comm.UAAndroid,
+		"User-Agent":   request.UAAndroid,
 	}
 
 	u := "http://share-5s3frizy.i.lailer.net/call_interface.php"
 	data := fmt.Sprintf("joinroom=joinroom&room=%s&sessionid=%s", uid, sessionid)
-	bs, err := comm.Client.PostForm(u, data, postHeaders)
+	bs, err := request.Client.PostForm(u, data, postHeaders)
 	if err != nil {
 		return nil, fmt.Errorf("执行获取主播基础信息的请求出错：%w", err)
 	}
@@ -66,7 +66,7 @@ func getBasicInfo(uid string, sessionid string) (*RespInterface, error) {
 }
 
 // GetAnchorInfo 3. 获取足迹主播的信息
-func (a *AnchorZuji) GetAnchorInfo() (*entity.AnchorInfo, error) {
+func (a *AnchorZuji) GetAnchorInfo() (*base.AnchorInfo, error) {
 	// 先获取基础信息
 	sessionid := "g2023041309420334220VdBieQfjTwL7g"
 	// sessionid, err := getSessionid(a.UID)
@@ -77,12 +77,12 @@ func (a *AnchorZuji) GetAnchorInfo() (*entity.AnchorInfo, error) {
 
 	vData, err := getBasicInfo(a.UID, sessionid)
 	if err != nil {
-		return entity.GenAnchorInfoWhenErr(a.Anchor,
+		return base.GenAnchorInfoWhenErr(a.Anchor,
 			fmt.Sprintf("http://share-djwgvyoc.i.lailer.net/u/%s", a.UID)), err
 	}
 
 	info := vData.Retinfo
-	anchorInfo := entity.AnchorInfo{
+	anchorInfo := base.AnchorInfo{
 		Anchor: a.Anchor,
 		Avatar: info.Logourl,
 		Name:   info.Nickname,
@@ -100,10 +100,10 @@ func (a *AnchorZuji) GetAnchorInfo() (*entity.AnchorInfo, error) {
 	// 主播在播，获取直播流地址
 	// 使用 `Android` 端的 `User-Agent` 可以返回 `.m3u8` 流，`Windows` 端则返回 `rtmp` 流
 	var headers = map[string]string{
-		"User-Agent": comm.UAAndroid,
+		"User-Agent": request.UAAndroid,
 	}
 	u := fmt.Sprintf("http://s.lailer.net/v/watchstart?vid=%s&sessionid=%s", info.Vid, sessionid)
-	bs, err := comm.Client.GetBytes(u, headers)
+	bs, err := request.Client.GetBytes(u, headers)
 	if err != nil {
 		return nil, fmt.Errorf("执行获取直播流地址的请求出错：%w", err)
 	}
@@ -125,12 +125,12 @@ func (a *AnchorZuji) GetAnchorInfo() (*entity.AnchorInfo, error) {
 
 // GetPlatName 获取平台名
 func (a *AnchorZuji) GetPlatName() string {
-	return name
+	return Name
 }
 
 // GetStreamHeaders 请求直播流时的请求头
 func (a *AnchorZuji) GetStreamHeaders() map[string]string {
 	return map[string]string{
-		"user-agent": comm.UAAndroid,
+		"user-agent": request.UAAndroid,
 	}
 }

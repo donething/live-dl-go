@@ -2,11 +2,10 @@ package m3u8
 
 import (
 	"fmt"
-	"github.com/donething/live-dl-go/comm"
-	"github.com/donething/live-dl-go/comm/logger"
 	"github.com/donething/live-dl-go/hanlders"
-	"github.com/donething/live-dl-go/m3u8decoder"
-	"github.com/donething/live-dl-go/stream/entity"
+	"github.com/donething/live-dl-go/request"
+	"github.com/donething/live-dl-go/stream/basestream"
+	"github.com/donething/live-dl-go/stream/decode/m3u8decoder"
 	"github.com/donething/utils-go/dofile"
 	"github.com/donething/utils-go/dovideo"
 	"io"
@@ -18,27 +17,23 @@ import (
 
 // Stream m3u8 直播流
 type Stream struct {
-	*entity.Stream
+	*basestream.Stream
 }
 
 // NewStream 创建 Stream 的实例
 //
 // 参数 path 视频的保存路径，以 ".mp4" 结尾
-func NewStream(title, streamUrl string, headers map[string]string, path string,
-	fileSizeThreshold int64, handler hanlders.IHandler) entity.IStream {
+func NewStream(task *hanlders.TaskInfo, streamUrl string, headers map[string]string) basestream.IStream {
 	return &Stream{
-		Stream: &entity.Stream{
-			Title:             title,
-			StreamUrl:         streamUrl,
-			Headers:           headers,
-			Path:              path,
-			FileSizeThreshold: fileSizeThreshold,
-			Handler:           handler,
+		Stream: &basestream.Stream{
+			TaskInfo:  task,
+			StreamUrl: streamUrl,
+			Headers:   headers,
 		},
 	}
 }
 
-func (s *Stream) GetStream() *entity.Stream {
+func (s *Stream) GetStream() *basestream.Stream {
 	return s.Stream
 }
 
@@ -62,7 +57,7 @@ func (s *Stream) Capture() error {
 
 		err := concatAndSend(p, s)
 		if err != nil {
-			logger.Error.Printf("合并、发送最后的文件夹的视频出错：%s", err.Error())
+			fmt.Printf("合并、发送最后的文件夹的视频出错：%s\n", err.Error())
 		}
 	}()
 
@@ -102,7 +97,7 @@ func (s *Stream) Capture() error {
 				continue
 			}
 
-			resp, err := comm.Client.Get(seg.URL, s.Headers)
+			resp, err := request.Client.Get(seg.URL, s.Headers)
 			if err != nil {
 				return fmt.Errorf("创建 m3u8 视频输入流出错。请求视频出错：%w", err)
 			}
@@ -162,11 +157,8 @@ func concatAndSend(dir string, s *Stream) error {
 	}
 
 	// 再处理当前合并的视频文件
-	hanlders.ChHandle <- &hanlders.InfoHandle{
-		Path:    unique,
-		Title:   s.Title,
-		Handler: s.Handler,
-	}
+	s.TaskInfo.Path = unique
+	hanlders.ChHandle <- s.TaskInfo
 
 	return nil
 }

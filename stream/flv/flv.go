@@ -2,39 +2,33 @@ package flv
 
 import (
 	"fmt"
-	"github.com/donething/live-dl-go/comm"
+	"github.com/donething/live-dl-go/anchors/base"
 	"github.com/donething/live-dl-go/hanlders"
-	entity2 "github.com/donething/live-dl-go/sites/entity"
-	"github.com/donething/live-dl-go/stream/entity"
+	"github.com/donething/live-dl-go/request"
+	"github.com/donething/live-dl-go/stream/basestream"
 	"io"
 )
 
 // CreateReaderFun 创建 flv 视频输入流的函数类型
-type CreateReaderFun func(anchorSite entity2.IAnchor) (io.ReadCloser, error)
+type CreateReaderFun func(anchorSite base.IAnchor) (io.ReadCloser, error)
 
 // Stream flv 直播流
 type Stream struct {
-	*entity.Stream
-	anchor entity2.IAnchor
+	*basestream.Stream
+	anchor base.IAnchor
 }
 
 // NewStream 创建 Stream 的实例
 //
 // 参数 path 视频的保存路径，以 ".flv" 结尾
-func NewStream(title, path string, fileSizeThreshold int64,
-	handler hanlders.IHandler, anchor entity2.IAnchor) entity.IStream {
+func NewStream(task *hanlders.TaskInfo, anchor base.IAnchor) basestream.IStream {
 	return &Stream{
-		Stream: &entity.Stream{
-			Title:             title,
-			Path:              path,
-			FileSizeThreshold: fileSizeThreshold,
-			Handler:           handler,
-		},
+		Stream: &basestream.Stream{TaskInfo: task},
 		anchor: anchor,
 	}
 }
 
-func (s *Stream) GetStream() *entity.Stream {
+func (s *Stream) GetStream() *basestream.Stream {
 	return s.Stream
 }
 
@@ -53,12 +47,12 @@ func (s *Stream) Capture() error {
 
 // CreateReader 创建 flv 视频输入流
 func (s *Stream) CreateReader() (io.ReadCloser, error) {
-	info, err := entity2.TryGetAnchorInfo(s.anchor, entity2.MaxRetry)
+	info, err := base.TryGetAnchorInfo(s.anchor, base.MaxRetry)
 	if err != nil {
 		return nil, fmt.Errorf("创建 Flv Reader 出错：获取主播信息出错：%w", err)
 	}
 
-	resp, err := comm.Client.Get(info.StreamUrl, s.anchor.GetStreamHeaders())
+	resp, err := request.Client.Get(info.StreamUrl, s.anchor.GetStreamHeaders())
 	if err != nil {
 		return nil, fmt.Errorf("创建 Flv Reader 出错：：请求视频出错：%w", err)
 	}

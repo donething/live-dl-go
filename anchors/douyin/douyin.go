@@ -6,8 +6,8 @@ package douyin
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/donething/live-dl-go/comm"
-	"github.com/donething/live-dl-go/sites/entity"
+	"github.com/donething/live-dl-go/anchors/base"
+	"github.com/donething/live-dl-go/request"
 	"net/url"
 	"regexp"
 )
@@ -15,18 +15,18 @@ import (
 // AnchorDouyin 抖音主播
 type AnchorDouyin struct {
 	// 主播的 UID 为直播间号
-	*entity.Anchor
+	*base.Anchor
 }
 
 const (
-	Plat = "douyin"
-	name = "抖音"
+	Platform = "douyin"
+	Name     = "抖音"
 )
 
 var (
 	// 目前除了要浏览器代理，还需要提供 cookie，否则获取到的是滑动验证页面
 	headers = map[string]string{
-		"user-agent": comm.UAWin,
+		"user-agent": request.UAWin,
 		"referer":    "https://live.douyin.com/",
 		"cookie": "device_web_cpu_core=6; device_web_memory_size=8; xgplayer_user_id=954101977251; " +
 			"csrf_session_id=f7a065a09fe1ab43fb54d0912daca6bd; webcast_leading_last_show_time=1693924374823; " +
@@ -75,15 +75,15 @@ var (
 )
 
 // GetAnchorInfo 获取抖音主播直播间的信息
-func (a *AnchorDouyin) GetAnchorInfo() (*entity.AnchorInfo, error) {
+func (a *AnchorDouyin) GetAnchorInfo() (*base.AnchorInfo, error) {
 	// 提取直播间的直播信息
 	// 此 API 请求头需要 Cookie，可以为未登录时的 Cookie
 	u := fmt.Sprintf("https://live.douyin.com/webcast/room/web/enter/?aid=6383&device_platform=web&"+
 		"enter_from=web_live&cookie_enabled=true&browser_language=zh-CN&browser_platform=Win32&"+
 		"browser_name=Chrome&browser_version=109.0.0.0&web_rid=%s", a.UID)
-	bs, err := comm.Client.GetBytes(u, headers)
+	bs, err := request.Client.GetBytes(u, headers)
 	if err != nil {
-		return entity.GenAnchorInfoWhenErr(a.Anchor, fmt.Sprintf("https://live.douyin.com/%s", a.UID)),
+		return base.GenAnchorInfoWhenErr(a.Anchor, fmt.Sprintf("https://live.douyin.com/%s", a.UID)),
 			fmt.Errorf("获取直播间出错：%w", err)
 	}
 
@@ -99,7 +99,7 @@ func (a *AnchorDouyin) GetAnchorInfo() (*entity.AnchorInfo, error) {
 	}
 
 	roomInfo := obj.Data.Data[0]
-	anchorInfo := entity.AnchorInfo{
+	anchorInfo := base.AnchorInfo{
 		Anchor:    a.Anchor,
 		Avatar:    obj.Data.User.AvatarThumb.URLList[0],
 		Name:      obj.Data.User.Nickname,
@@ -115,23 +115,23 @@ func (a *AnchorDouyin) GetAnchorInfo() (*entity.AnchorInfo, error) {
 // GetAnchorInfoParseWeb 获取抖音主播直播间的信息
 //
 // roomid 直播间号
-func (a *AnchorDouyin) GetAnchorInfoParseWeb() (*entity.AnchorInfo, error) {
+func (a *AnchorDouyin) GetAnchorInfoParseWeb() (*base.AnchorInfo, error) {
 	// 提取直播间的直播信息
 	u := fmt.Sprintf("https://live.douyin.com/%s", a.UID)
 	roomStatus, err := parseRenderData[RoomStatus](u)
 	if err != nil {
-		return entity.GenAnchorInfoWhenErr(a.Anchor, fmt.Sprintf("https://live.douyin.com/%s", a.UID)),
+		return base.GenAnchorInfoWhenErr(a.Anchor, fmt.Sprintf("https://live.douyin.com/%s", a.UID)),
 			fmt.Errorf("获取直播间出错：%w", err)
 	}
 
 	// 是否开播，关系到页面中是否存在数据
 	if roomStatus.App.InitialState.RoomStore.RoomInfo.Anchor.Nickname == "" {
-		return entity.GenAnchorInfoWhenErr(a.Anchor, fmt.Sprintf("https://live.douyin.com/%s", a.UID)),
+		return base.GenAnchorInfoWhenErr(a.Anchor, fmt.Sprintf("https://live.douyin.com/%s", a.UID)),
 			fmt.Errorf("不存在的直播间")
 	}
 
 	roomInfo := roomStatus.App.InitialState.RoomStore.RoomInfo
-	anchorInfo := entity.AnchorInfo{
+	anchorInfo := base.AnchorInfo{
 		Anchor:    a.Anchor,
 		Avatar:    roomInfo.Anchor.AvatarThumb.URLList[0],
 		Name:      roomInfo.Anchor.Nickname,
@@ -146,20 +146,20 @@ func (a *AnchorDouyin) GetAnchorInfoParseWeb() (*entity.AnchorInfo, error) {
 
 // GetPlatName 获取平台名
 func (a *AnchorDouyin) GetPlatName() string {
-	return name
+	return Name
 }
 
 // GetStreamHeaders 请求直播流时的请求头
 func (a *AnchorDouyin) GetStreamHeaders() map[string]string {
 	return map[string]string{
-		"user-agent": comm.UAWin,
+		"user-agent": request.UAWin,
 	}
 }
 
 // 提取网页中的 RENDER_DATA
 func parseRenderData[T any](dyUrl string) (*T, error) {
 	// 获取抖音网页文本
-	text, err := comm.Client.GetText(dyUrl, headers)
+	text, err := request.Client.GetText(dyUrl, headers)
 	if err != nil {
 		return nil, fmt.Errorf("获取网页内容出错(%s)：%w", dyUrl, err)
 	}

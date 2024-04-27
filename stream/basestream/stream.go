@@ -1,4 +1,4 @@
-package entity
+package basestream
 
 import (
 	"github.com/donething/live-dl-go/hanlders"
@@ -19,29 +19,12 @@ type StopType struct {
 
 // Stream 视频流
 type Stream struct {
-	// 标题。注意作为 TG 的 caption 时，需要转义
-	Title string
+	*hanlders.TaskInfo
 
-	// 视频流的地址
-	StreamUrl string
-
-	// 请求头
-	Headers map[string]string
-
-	// 视频文件的保存路径。flv 流的后缀为".flv"，m3u8 流的后缀为".mp4"
-	Path string
-
-	// 文件的最大字节数，为 0 表示无限制。上传 TG 建议设为 1.8GB: 1800*1024*1024
-	FileSizeThreshold int64
-
-	// 文件处理器
-	Handler hanlders.IHandler
-
-	// 	已写入当前视频文件/文件夹的字节数，用于保证单个文件不超过指定的大小
-	CurBytes BytesType
-
-	// 停止录制视频流
-	Stop StopType
+	StreamUrl string            // 视频流的地址
+	Headers   map[string]string // 获取视频流时携带的请求头
+	CurBytes  BytesType         // 已写入当前视频文件/文件夹的字节数，用于保证单个文件不超过指定的大小
+	Stop      StopType          // 用于停止录制
 }
 
 // GetBytes 获取当前视频文件中已写入的字节数

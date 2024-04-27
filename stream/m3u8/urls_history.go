@@ -2,7 +2,7 @@ package m3u8
 
 const MaxUrlsHistory = 10
 
-// UrlsHistory 避免发送重复切片的 URL 下载
+// UrlsHistory 避免发送、下载重复的 URL 切片
 //
 // 用一个固定容量的切片保存历史 URL
 type UrlsHistory struct {
@@ -16,7 +16,7 @@ type UrlsHistory struct {
 
 // NewUrlsHistory 创建保存历史 URL 的实例。参数为容量，可以设为 MaxUrlsHistory
 func NewUrlsHistory(max int) *UrlsHistory {
-	urls := make([]string, max, max)
+	urls := make([]string, max)
 	return &UrlsHistory{
 		urls: urls,
 		max:  max,

@@ -1,33 +1,27 @@
 package hanlders
 
-import (
-	"github.com/donething/live-dl-go/comm/logger"
-)
+// AfterHandleFunc 执行处理视频后的回调函数
+type AfterHandleFunc func(task *TaskInfo, err error)
 
 // IHandler 处理已完成下载的视频的处理器接口
 type IHandler interface {
-	Handle(info *InfoHandle) error
+	Handle(task *TaskInfo)
 }
 
-// InfoHandle 需要被处理的文件和信息
-type InfoHandle struct {
-	// 文件路径
-	Path string
-	// 标题。注意作为 TG 的 caption 时，需要转义
-	Title string
-	// 文件处理器。在 handler worker 中将调用，来处理文件
-	Handler IHandler
-	// 上传到TG时的分段大小，为 0 不分段
-	FileSizeThreshold int64
-	// 	上传成功是否删除源文件。TG Handler 可设置
-	Delete bool
+// TaskInfo 需要被处理的文件和信息
+type TaskInfo struct {
+	Path              string          // 任务文件（保存）的路径。注意根据视频流的类型设置正确的文件格式，如".flv"、".mp4"等
+	Title             string          // 标题。注意作为 TG 的 caption 时，需要转义
+	Handler           IHandler        // 文件处理器。在 handler worker 中将调用，来处理文件
+	FileSizeThreshold int64           // 文件的最大字节数，为 0 表示不分段。上传 TG 建议设为 hanlders.FileSizeThreshold
+	AfterHandle       AfterHandleFunc // 执行完 Handler 后的回调
 }
 
-// 处理文件的goroutine数量
+// 处理文件的 goroutine 数量
 const handlerCount = 5
 
 // ChHandle 发送需要被处理的文件的通道
-var ChHandle = make(chan *InfoHandle, handlerCount)
+var ChHandle = make(chan *TaskInfo, handlerCount)
 
 // WGHandler 等待处理完所有视频后，才能退出
 // var WGHandler = sync.WaitGroup{}
@@ -37,24 +31,17 @@ func init() {
 	for gr := 1; gr <= handlerCount; gr++ {
 		go handler()
 	}
-	logger.Info.Println("视频处理器的 goroutine 已准备就绪")
 }
 
 // 视频文件处理器。从 ChHandle 接收视频文件
 func handler() {
 	for {
-		info, ok := <-ChHandle
+		task, ok := <-ChHandle
 		if !ok {
 			break
 		}
 
 		// 	实际工作
-		logger.Info.Printf("开始处理视频文件：%s\n", info.Path)
-		err := info.Handler.Handle(info)
-		if err != nil {
-			logger.Error.Printf("处理视频文件出错(%s)：%s\n", info.Path, err)
-			continue
-		}
-		logger.Info.Printf("完成处理视频文件：%s\n", info.Path)
+		task.Handler.Handle(task)
 	}
 }

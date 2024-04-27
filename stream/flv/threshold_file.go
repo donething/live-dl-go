@@ -50,11 +50,9 @@ func (f *ThresholdFile) StartSave() error {
 		if exists, err := dofile.Exists(f.uniPath); err != nil || !exists {
 			return
 		}
-		hanlders.ChHandle <- &hanlders.InfoHandle{
-			Path:    f.uniPath,
-			Title:   f.stream.Title,
-			Handler: f.stream.Handler,
-		}
+
+		f.stream.Path = f.uniPath
+		hanlders.ChHandle <- f.stream.TaskInfo
 	}()
 
 	// 缓存
@@ -120,11 +118,8 @@ func (f *ThresholdFile) Write(bs []byte) (int, error) {
 		f.file.Close()
 
 		// 再处理当前视频文件
-		hanlders.ChHandle <- &hanlders.InfoHandle{
-			Path:    f.uniPath,
-			Title:   f.stream.Title,
-			Handler: f.stream.Handler,
-		}
+		f.stream.Path = f.uniPath
+		hanlders.ChHandle <- f.stream.TaskInfo
 
 		// 最后清空该视频文件的信息，以便新创建
 		f.file = nil

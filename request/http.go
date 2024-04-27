@@ -1,11 +1,6 @@
-package comm
+package request
 
 import "github.com/donething/utils-go/dohttp"
-
-const (
-	// SizeOneGB 1 GB 字节
-	SizeOneGB = 1024 * 1024 * 1024
-)
 
 const (
 	UAWin = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +

@@ -1,4 +1,4 @@
-package entity
+package basestream
 
 // IStream 接口
 type IStream interface {

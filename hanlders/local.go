@@ -11,11 +11,14 @@ import (
 // LocalHanlder 保存到本地
 type LocalHanlder struct{}
 
-func (l *LocalHanlder) Handle(info *InfoHandle) error {
-	name := fmt.Sprintf("%s_%d%s", info.Title, time.Now().Unix(), filepath.Ext(info.Path))
+func (l *LocalHanlder) Handle(task *TaskInfo) {
+	name := fmt.Sprintf("%s_%d%s", task.Title, time.Now().Unix(), filepath.Ext(task.Path))
 	name = dofile.ValidFileName(name, "_")
 
-	dst := filepath.Join(filepath.Dir(info.Path), name)
-	// logger.Info.Printf("重命名：'%s' => '%s'\n", info.Path, dst)
-	return os.Rename(info.Path, dst)
+	dst := filepath.Join(filepath.Dir(task.Path), name)
+	// logger.Info.Printf("重命名：'%s' => '%s'\n", task.Path, dst)
+
+	if task.AfterHandle != nil {
+		task.AfterHandle(task, os.Rename(task.Path, dst))
+	}
 }
