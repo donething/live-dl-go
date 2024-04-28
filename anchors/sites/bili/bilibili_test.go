@@ -1,27 +1,27 @@
 package bili
 
 import (
-	"github.com/donething/live-dl-go/anchors/base"
+	"github.com/donething/live-dl-go/anchors/baseanchor"
 	"testing"
 )
 
 func TestAnchorBili_GetAnchorInfo(t *testing.T) {
 	type fields struct {
-		Anchor *base.Anchor
+		Anchor *baseanchor.Anchor
 	}
 	tests := []struct {
 		name    string
 		fields  fields
-		want    *base.AnchorInfo
+		want    *baseanchor.AnchorInfo
 		wantErr bool
 	}{
 		{
 			name: "测试 DYS",
-			fields: fields{Anchor: &base.Anchor{
+			fields: fields{Anchor: &baseanchor.Anchor{
 				UID:  "8739477",
 				Plat: Platform,
 			}},
-			want: &base.AnchorInfo{
+			want: &baseanchor.AnchorInfo{
 				Name: "老实憨厚的笑笑",
 			},
 			wantErr: false,

@@ -2,9 +2,9 @@ package flv
 
 import (
 	"fmt"
-	"github.com/donething/live-dl-go/anchors/base"
-	"github.com/donething/live-dl-go/anchors/bili"
+	"github.com/donething/live-dl-go/anchors/baseanchor"
 	"github.com/donething/live-dl-go/anchors/platform"
+	"github.com/donething/live-dl-go/anchors/sites/bili"
 	"github.com/donething/live-dl-go/hanlders"
 	"path/filepath"
 	"testing"
@@ -34,7 +34,7 @@ var (
 )
 
 func TestStream_Capture(t *testing.T) {
-	anchor := base.Anchor{
+	anchor := baseanchor.Anchor{
 		UID:  "2011822166",
 		Plat: bili.Platform,
 	}

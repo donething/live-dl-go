@@ -2,10 +2,10 @@ package platform
 
 import (
 	"fmt"
-	"github.com/donething/live-dl-go/anchors/base"
-	"github.com/donething/live-dl-go/anchors/bili"
-	"github.com/donething/live-dl-go/anchors/douyin"
-	"github.com/donething/live-dl-go/anchors/zuji"
+	"github.com/donething/live-dl-go/anchors/baseanchor"
+	"github.com/donething/live-dl-go/anchors/sites/bili"
+	"github.com/donething/live-dl-go/anchors/sites/douyin"
+	"github.com/donething/live-dl-go/anchors/sites/zuji"
 )
 
 // Platforms 已适配的所有平台
@@ -16,7 +16,7 @@ var Platforms = map[string]string{
 }
 
 // GenAnchor 自动生成与平台对应的 Anchor* 的实例
-func GenAnchor(anchor *base.Anchor) (base.IAnchor, error) {
+func GenAnchor(anchor *baseanchor.Anchor) (baseanchor.IAnchor, error) {
 	switch anchor.Plat {
 	case bili.Platform:
 		return &bili.AnchorBili{Anchor: anchor}, nil

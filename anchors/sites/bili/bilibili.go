@@ -3,14 +3,14 @@ package bili
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/donething/live-dl-go/anchors/base"
+	"github.com/donething/live-dl-go/anchors/baseanchor"
 	"github.com/donething/live-dl-go/request"
 )
 
 // AnchorBili 哔哩哔哩主播
 type AnchorBili struct {
 	// 主播的 UID 为用户 ID，非房间号
-	*base.Anchor
+	*baseanchor.Anchor
 }
 
 const (
@@ -19,18 +19,18 @@ const (
 )
 
 // GetAnchorInfo 获取哔哩哔哩直播流的地址
-func (a *AnchorBili) GetAnchorInfo() (*base.AnchorInfo, error) {
+func (a *AnchorBili) GetAnchorInfo() (*baseanchor.AnchorInfo, error) {
 	// 获取房间信息
 	roomStatus, err := getRoomStatus(a.UID)
 	if err != nil {
-		return base.GenAnchorInfoWhenErr(a.Anchor, fmt.Sprintf("https://space.bilibili.com/%s", a.UID)), err
+		return baseanchor.GenAnchorInfoWhenErr(a.Anchor, fmt.Sprintf("https://space.bilibili.com/%s", a.UID)), err
 	}
 	playUrl, err := getPlayUrl(roomStatus.RoomID)
 	if err != nil {
-		return base.GenAnchorInfoWhenErr(a.Anchor, fmt.Sprintf("https://space.bilibili.com/%s", a.UID)), err
+		return baseanchor.GenAnchorInfoWhenErr(a.Anchor, fmt.Sprintf("https://space.bilibili.com/%s", a.UID)), err
 	}
 
-	info := base.AnchorInfo{
+	info := baseanchor.AnchorInfo{
 		Anchor:    a.Anchor,
 		Avatar:    roomStatus.Face,
 		Name:      roomStatus.Uname,

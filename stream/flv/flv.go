@@ -2,7 +2,7 @@ package flv
 
 import (
 	"fmt"
-	"github.com/donething/live-dl-go/anchors/base"
+	"github.com/donething/live-dl-go/anchors/baseanchor"
 	"github.com/donething/live-dl-go/hanlders"
 	"github.com/donething/live-dl-go/request"
 	"github.com/donething/live-dl-go/stream/basestream"
@@ -10,18 +10,18 @@ import (
 )
 
 // CreateReaderFun 创建 flv 视频输入流的函数类型
-type CreateReaderFun func(anchorSite base.IAnchor) (io.ReadCloser, error)
+type CreateReaderFun func(anchorSite baseanchor.IAnchor) (io.ReadCloser, error)
 
 // Stream flv 直播流
 type Stream struct {
 	*basestream.Stream
-	anchor base.IAnchor
+	anchor baseanchor.IAnchor
 }
 
 // NewStream 创建 Stream 的实例
 //
 // 参数 path 视频的保存路径，以 ".flv" 结尾
-func NewStream(task *hanlders.TaskInfo, anchor base.IAnchor) basestream.IStream {
+func NewStream(task *hanlders.TaskInfo, anchor baseanchor.IAnchor) basestream.IStream {
 	return &Stream{
 		Stream: &basestream.Stream{TaskInfo: task},
 		anchor: anchor,
@@ -47,7 +47,7 @@ func (s *Stream) Capture() error {
 
 // CreateReader 创建 flv 视频输入流
 func (s *Stream) CreateReader() (io.ReadCloser, error) {
-	info, err := base.TryGetAnchorInfo(s.anchor, base.MaxRetry)
+	info, err := baseanchor.TryGetAnchorInfo(s.anchor, baseanchor.MaxRetry)
 	if err != nil {
 		return nil, fmt.Errorf("创建 Flv Reader 出错：获取主播信息出错：%w", err)
 	}

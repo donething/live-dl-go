@@ -2,10 +2,10 @@ package stream
 
 import (
 	"fmt"
-	"github.com/donething/live-dl-go/anchors/base"
-	"github.com/donething/live-dl-go/anchors/bili"
-	"github.com/donething/live-dl-go/anchors/douyin"
-	"github.com/donething/live-dl-go/anchors/zuji"
+	"github.com/donething/live-dl-go/anchors/baseanchor"
+	"github.com/donething/live-dl-go/anchors/sites/bili"
+	"github.com/donething/live-dl-go/anchors/sites/douyin"
+	"github.com/donething/live-dl-go/anchors/sites/zuji"
 	"github.com/donething/live-dl-go/hanlders"
 	entity2 "github.com/donething/live-dl-go/stream/basestream"
 	"github.com/donething/live-dl-go/stream/capture_status"
@@ -49,7 +49,7 @@ var (
 )
 
 func TestStartAnchorFlv(t *testing.T) {
-	anchor := base.Anchor{
+	anchor := baseanchor.Anchor{
 		UID:  "249406961231",
 		Plat: douyin.Platform,
 	}
@@ -61,7 +61,7 @@ func TestStartAnchorFlv(t *testing.T) {
 }
 
 func TestStartAnchorBili(t *testing.T) {
-	anchor := base.Anchor{
+	anchor := baseanchor.Anchor{
 		UID:  "8739477",
 		Plat: bili.Platform,
 	}
@@ -73,7 +73,7 @@ func TestStartAnchorBili(t *testing.T) {
 }
 
 func TestStartAnchorM3u8(t *testing.T) {
-	anchor := base.Anchor{
+	anchor := baseanchor.Anchor{
 		UID:  "15722883",
 		Plat: zuji.Platform,
 	}
@@ -85,7 +85,7 @@ func TestStartAnchorM3u8(t *testing.T) {
 }
 
 func TestStartAnchorZuji(t *testing.T) {
-	anchor := base.Anchor{
+	anchor := baseanchor.Anchor{
 		UID:  "20221998",
 		Plat: zuji.Platform,
 	}

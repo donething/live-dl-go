@@ -2,7 +2,7 @@ package stream
 
 import (
 	"fmt"
-	"github.com/donething/live-dl-go/anchors/base"
+	"github.com/donething/live-dl-go/anchors/baseanchor"
 	"github.com/donething/live-dl-go/anchors/platform"
 	"github.com/donething/live-dl-go/hanlders"
 	"github.com/donething/live-dl-go/stream/basestream"
@@ -22,7 +22,7 @@ import (
 // 录制表 capturing 通过传递，方便在调用处获取录制状态
 //
 // 当 stream 为 nil 时，将根据直播流地址自动生成
-func StartAnchor(capturing *capture_status.CapStatus[basestream.IStream], anchor base.Anchor,
+func StartAnchor(capturing *capture_status.CapStatus[basestream.IStream], anchor baseanchor.Anchor,
 	workdir string, task hanlders.TaskInfo) error {
 	// 开始录制该主播的时间
 	start := dotext.FormatDate(time.Now(), "20060102")
@@ -33,7 +33,7 @@ func StartAnchor(capturing *capture_status.CapStatus[basestream.IStream], anchor
 	}
 
 	// 	获取主播信息
-	info, err := base.TryGetAnchorInfo(anchorObj, base.MaxRetry)
+	info, err := baseanchor.TryGetAnchorInfo(anchorObj, baseanchor.MaxRetry)
 	if err != nil {
 		return err
 	}
@@ -94,7 +94,7 @@ func StartAnchor(capturing *capture_status.CapStatus[basestream.IStream], anchor
 	err = s.Capture()
 	// 当录制出错时，要判断出错情况：在获取直播流出错时，先判断主播此时是否在播，主播且出错才是真正的录制错误
 	if err != nil {
-		infoCheck, errOnlive := base.TryGetAnchorInfo(anchorObj, base.MaxRetry)
+		infoCheck, errOnlive := baseanchor.TryGetAnchorInfo(anchorObj, baseanchor.MaxRetry)
 		if errOnlive != nil {
 			return errOnlive
 		}

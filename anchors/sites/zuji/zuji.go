@@ -3,7 +3,7 @@ package zuji
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/donething/live-dl-go/anchors/base"
+	"github.com/donething/live-dl-go/anchors/baseanchor"
 	"github.com/donething/live-dl-go/request"
 	"regexp"
 )
@@ -16,7 +16,7 @@ const (
 // AnchorZuji 足迹主播
 type AnchorZuji struct {
 	// 主播的 ID 为用户 ID
-	*base.Anchor
+	*baseanchor.Anchor
 }
 
 // 1. 获取 sessionid
@@ -66,7 +66,7 @@ func getBasicInfo(uid string, sessionid string) (*RespInterface, error) {
 }
 
 // GetAnchorInfo 3. 获取足迹主播的信息
-func (a *AnchorZuji) GetAnchorInfo() (*base.AnchorInfo, error) {
+func (a *AnchorZuji) GetAnchorInfo() (*baseanchor.AnchorInfo, error) {
 	// 先获取基础信息
 	sessionid := "g2023041309420334220VdBieQfjTwL7g"
 	// sessionid, err := getSessionid(a.UID)
@@ -77,12 +77,12 @@ func (a *AnchorZuji) GetAnchorInfo() (*base.AnchorInfo, error) {
 
 	vData, err := getBasicInfo(a.UID, sessionid)
 	if err != nil {
-		return base.GenAnchorInfoWhenErr(a.Anchor,
+		return baseanchor.GenAnchorInfoWhenErr(a.Anchor,
 			fmt.Sprintf("http://share-djwgvyoc.i.lailer.net/u/%s", a.UID)), err
 	}
 
 	info := vData.Retinfo
-	anchorInfo := base.AnchorInfo{
+	anchorInfo := baseanchor.AnchorInfo{
 		Anchor: a.Anchor,
 		Avatar: info.Logourl,
 		Name:   info.Nickname,

@@ -1,4 +1,4 @@
-package base
+package baseanchor
 
 // IAnchor 主播的接口
 type IAnchor interface {

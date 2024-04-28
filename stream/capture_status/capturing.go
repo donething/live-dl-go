@@ -2,7 +2,7 @@ package capture_status
 
 import (
 	"fmt"
-	"github.com/donething/live-dl-go/anchors/base"
+	"github.com/donething/live-dl-go/anchors/baseanchor"
 	"sync"
 )
 
@@ -58,6 +58,6 @@ func (c *CapStatus[T]) Keys() []string {
 }
 
 // GenCapturingKey 正在录制的主播的键，避免重复录制。格式如 "<平台>_<主播ID>"，如 "bili_12345"
-func GenCapturingKey(anchor base.Anchor) string {
+func GenCapturingKey(anchor baseanchor.Anchor) string {
 	return fmt.Sprintf("%s_%s", anchor.Plat, anchor.UID)
 }

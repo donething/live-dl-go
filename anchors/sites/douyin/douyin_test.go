@@ -1,50 +1,50 @@
 package douyin
 
 import (
-	"github.com/donething/live-dl-go/anchors/base"
+	"github.com/donething/live-dl-go/anchors/baseanchor"
 	"strings"
 	"testing"
 )
 
 func TestAnchorDouyin_GetAnchorInfo(t *testing.T) {
 	type fields struct {
-		Anchor *base.Anchor
+		Anchor *baseanchor.Anchor
 	}
 	tests := []struct {
 		name    string
 		fields  fields
-		want    *base.AnchorInfo
+		want    *baseanchor.AnchorInfo
 		wantErr bool
 	}{
 		{
 			name: "测试不在播 假树",
-			fields: fields{Anchor: &base.Anchor{
+			fields: fields{Anchor: &baseanchor.Anchor{
 				UID:  "165251594775",
 				Plat: Platform,
 			}},
-			want: &base.AnchorInfo{
+			want: &baseanchor.AnchorInfo{
 				Name: "假树",
 			},
 			wantErr: false,
 		},
 		{
 			name: "测试不在播 ☁️云福晋☁️",
-			fields: fields{Anchor: &base.Anchor{
+			fields: fields{Anchor: &baseanchor.Anchor{
 				UID:  "483360313799",
 				Plat: Platform,
 			}},
-			want: &base.AnchorInfo{
+			want: &baseanchor.AnchorInfo{
 				Name: "☁️云福晋☁️",
 			},
 			wantErr: false,
 		},
 		{
 			name: "测试在播 鹿哥电影",
-			fields: fields{Anchor: &base.Anchor{
+			fields: fields{Anchor: &baseanchor.Anchor{
 				UID:  "937098912324",
 				Plat: Platform,
 			}},
-			want: &base.AnchorInfo{
+			want: &baseanchor.AnchorInfo{
 				Name: "鹿哥电影",
 			},
 			wantErr: false,

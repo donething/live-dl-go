@@ -1,4 +1,4 @@
-package base
+package baseanchor
 
 // Anchor 需要获取直播流的主播的信息
 type Anchor struct {

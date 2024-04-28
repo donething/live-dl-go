@@ -1,51 +1,51 @@
 package zuji
 
 import (
-	"github.com/donething/live-dl-go/anchors/base"
+	"github.com/donething/live-dl-go/anchors/baseanchor"
 	"strings"
 	"testing"
 )
 
 func TestAnchorZuji_GetAnchorInfo(t *testing.T) {
 	type fields struct {
-		Anchor *base.Anchor
+		Anchor *baseanchor.Anchor
 	}
 
 	tests := []struct {
 		name    string
 		fields  fields
-		want    *base.AnchorInfo
+		want    *baseanchor.AnchorInfo
 		wantErr bool
 	}{
 		{
 			name: "测试 蝴蝶曼",
-			fields: fields{Anchor: &base.Anchor{
+			fields: fields{Anchor: &baseanchor.Anchor{
 				UID:  "15050303",
 				Plat: Platform,
 			}},
-			want: &base.AnchorInfo{
+			want: &baseanchor.AnchorInfo{
 				Name: "蝴蝶曼",
 			},
 			wantErr: false,
 		},
 		{
 			name: "测试 虎妮",
-			fields: fields{Anchor: &base.Anchor{
+			fields: fields{Anchor: &baseanchor.Anchor{
 				UID:  "29608771",
 				Plat: Platform,
 			}},
-			want: &base.AnchorInfo{
+			want: &baseanchor.AnchorInfo{
 				Name: "虎妮",
 			},
 			wantErr: false,
 		},
 		{
 			name: "测试 铁锤",
-			fields: fields{Anchor: &base.Anchor{
+			fields: fields{Anchor: &baseanchor.Anchor{
 				UID:  "20233311",
 				Plat: Platform,
 			}},
-			want: &base.AnchorInfo{
+			want: &baseanchor.AnchorInfo{
 				Name: "铁锤",
 			},
 			wantErr: false,
